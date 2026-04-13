@@ -1,0 +1,113 @@
+openapi: 3.0.3
+info:
+  title: Bankramen API
+  version: 0.1.0
+  description: Contract-first OpenAPI spec for Bankramen Android client generation.
+servers:
+  - url: https://api.example.com
+paths:
+  /health:
+    get:
+      tags:
+        - System
+      operationId: getHealth
+      responses:
+        '200':
+          description: Health check response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /api/v1/auth/kakao/login:
+    post:
+      tags:
+        - Auth
+      operationId: loginWithKakao
+      summary: Exchange a Kakao access token for Bankramen app tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KakaoLoginRequest'
+      responses:
+        '200':
+          description: Successful authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSessionResponse'
+        '401':
+          description: Invalid Kakao token
+  /api/v1/auth/token/reissue:
+    post:
+      tags:
+        - Auth
+      operationId: reissueToken
+      summary: Reissue access token using refresh token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenReissueRequest'
+      responses:
+        '200':
+          description: Reissued token pair
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthSessionResponse'
+        '401':
+          description: Invalid or expired refresh token
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          example: ok
+        serverTime:
+          type: string
+          format: date-time
+    KakaoLoginRequest:
+      type: object
+      required:
+        - kakaoAccessToken
+      properties:
+        kakaoAccessToken:
+          type: string
+          description: Access token issued by Kakao SDK/login flow
+          example: kakao-access-token-sample
+    TokenReissueRequest:
+      type: object
+      required:
+        - refreshToken
+      properties:
+        refreshToken:
+          type: string
+          description: Refresh token issued by Bankramen backend
+          example: bankramen-refresh-token-sample
+    AuthSessionResponse:
+      type: object
+      required:
+        - accessToken
+        - refreshToken
+        - accessTokenExpiresAt
+      properties:
+        userId:
+          type: string
+          example: user_123
+        accessToken:
+          type: string
+          example: bankramen-access-token-sample
+        refreshToken:
+          type: string
+          example: bankramen-refresh-token-sample
+        accessTokenExpiresAt:
+          type: string
+          format: date-time
+          example: 2026-04-13T12:00:00Z

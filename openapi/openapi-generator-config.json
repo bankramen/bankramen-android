@@ -1,0 +1,8 @@
+{
+  "library": "jvm-retrofit2",
+  "serializationLibrary": "gson",
+  "useCoroutines": true,
+  "enumPropertyNaming": "UPPERCASE",
+  "sourceFolder": "src/main/kotlin",
+  "packageName": "com.uson.myapplication.generated"
+}
