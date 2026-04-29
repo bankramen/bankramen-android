@@ -39,7 +39,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             it.copy(
                 notificationAccessGranted = NotificationAccessManager.hasAccess(appContext),
                 notificationDebugPath = NotificationDebugRepository.debugFilePath(appContext),
-                authContractLabel = "REST 계약 준비 완료 (/api/v1/auth/kakao/login, /api/v1/auth/token/reissue)",
+                authContractLabel = "인가 코드 계약 준비 완료 (/api/v1/auth/kakao/login, /api/v1/auth/token/reissue)",
             )
         }
     }
@@ -80,59 +80,62 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun loginWithPreparedContract(
-        kakaoAccessToken: String = "placeholder-kakao-access-token",
-        onSuccess: () -> Unit = {},
-    ) {
-        viewModelScope.launch {
-            authRepository.loginWithKakao(kakaoAccessToken)
-                .onSuccess {
-                    _uiState.update {
-                        it.copy(
-                            authStatusLabel = "로그인 성공 형식 확인",
-                            authStatusDetail = "백엔드가 준비되면 같은 계약으로 실제 로그인돼요",
-                            isAuthenticated = true,
-                        )
-                    }
-                    onSuccess()
-                }
-                .onFailure {
-                    _uiState.update {
-                        it.copy(
-                            authStatusLabel = "연결 대기",
-                            authStatusDetail = "REST 계약은 준비됐고 백엔드 연결만 남았어요",
-                            isAuthenticated = false,
-                        )
-                    }
-                }
+    fun startKakaoLogin(context: Context) {
+        _uiState.update {
+            it.copy(
+                authStatusLabel = "카카오 로그인 진행 중",
+                authStatusDetail = "브라우저에서 카카오 인증을 완료하면 앱으로 돌아와요",
+                isAuthenticated = false,
+            )
         }
+
+        authRepository.startKakaoLogin(context)
+            .onFailure { throwable ->
+                _uiState.update {
+                    it.copy(
+                        authStatusLabel = "카카오 로그인 시작 실패",
+                        authStatusDetail = throwable.message ?: "카카오 로그인 브라우저를 열지 못했어요",
+                        isAuthenticated = false,
+                    )
+                }
+            }
     }
 
-    fun loginWithKakaoSdk(
-        context: Context,
-        onSuccess: () -> Unit = {},
-    ) {
+    fun consumePendingKakaoLogin(onSuccess: () -> Unit = {}) {
         viewModelScope.launch {
-            authRepository.loginWithKakaoSdk(context)
-                .onSuccess {
+            when (val result = authRepository.completePendingKakaoLogin()) {
+                null -> Unit
+                else -> {
                     _uiState.update {
                         it.copy(
-                            authStatusLabel = "카카오 로그인 준비 완료",
-                            authStatusDetail = "SDK와 백엔드가 연결되면 바로 홈으로 이동해요",
-                            isAuthenticated = true,
-                        )
-                    }
-                    onSuccess()
-                }
-                .onFailure {
-                    _uiState.update {
-                        it.copy(
-                            authStatusLabel = "카카오 SDK 연결 대기",
-                            authStatusDetail = "SDK 키와 실제 Kakao 로그인 연결만 남았어요",
+                            authStatusLabel = "카카오 로그인 확인 중",
+                            authStatusDetail = "인가 코드를 서버 로그인 요청으로 교환하고 있어요",
                             isAuthenticated = false,
                         )
                     }
+
+                    result
+                        .onSuccess {
+                            _uiState.update {
+                                it.copy(
+                                    authStatusLabel = "카카오 로그인 완료",
+                                    authStatusDetail = "인가 코드 기반 서버 세션 발급이 완료됐어요",
+                                    isAuthenticated = true,
+                                )
+                            }
+                            onSuccess()
+                        }
+                        .onFailure { throwable ->
+                            _uiState.update {
+                                it.copy(
+                                    authStatusLabel = "카카오 로그인 실패",
+                                    authStatusDetail = throwable.message ?: "카카오 로그인 중 오류가 발생했어요",
+                                    isAuthenticated = false,
+                                )
+                            }
+                        }
                 }
+            }
         }
     }
 

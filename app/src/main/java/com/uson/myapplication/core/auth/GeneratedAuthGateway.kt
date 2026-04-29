@@ -17,9 +17,13 @@ class GeneratedAuthGateway(
         body.toAuthSession()
     }
 
-    override suspend fun loginWithKakao(kakaoAccessToken: String): Result<AuthSession> = runCatching {
+    override suspend fun loginWithKakao(request: KakaoAuthorizationCodeRequest): Result<AuthSession> = runCatching {
         val response = authApi.loginWithKakao(
-            kakaoLoginRequest = KakaoLoginRequest(kakaoAccessToken = kakaoAccessToken),
+            kakaoLoginRequest = KakaoLoginRequest(
+                authorizationCode = request.authorizationCode,
+                redirectUri = request.redirectUri,
+                state = request.state,
+            ),
         )
         val body = response.body() ?: error("Kakao login response body is empty")
         body.toAuthSession()

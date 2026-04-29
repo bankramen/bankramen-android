@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.update
 data class RootUiState(
     val isAuthenticated: Boolean = false,
     val userId: String? = null,
+    val showPrototypeHome: Boolean = false,
 )
 
 class RootViewModel(application: Application) : AndroidViewModel(application) {
@@ -38,9 +39,17 @@ class RootViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun openPrototypeHome() {
+        _uiState.update {
+            it.copy(showPrototypeHome = true)
+        }
+    }
+
     fun logout() {
         sessionManager.clearSession()
-        refresh()
+        _uiState.update {
+            RootUiState()
+        }
     }
 }
 
@@ -50,12 +59,15 @@ fun AppRoot(
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
-    if (uiState.value.isAuthenticated) {
+    if (uiState.value.isAuthenticated || uiState.value.showPrototypeHome) {
         HomeScreen(
             userId = uiState.value.userId,
             onLogoutClick = viewModel::logout,
         )
     } else {
-        LoginRoute(onLoginCompleted = viewModel::refresh)
+        LoginRoute(
+            onLoginCompleted = viewModel::refresh,
+            onOpenShowcase = viewModel::openPrototypeHome,
+        )
     }
 }

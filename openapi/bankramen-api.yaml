@@ -23,7 +23,7 @@ paths:
       tags:
         - Auth
       operationId: loginWithKakao
-      summary: Exchange a Kakao access token for Bankramen app tokens
+      summary: Exchange a Kakao authorization code for Bankramen app tokens
       requestBody:
         required: true
         content:
@@ -38,7 +38,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/AuthSessionResponse'
         '401':
-          description: Invalid Kakao token
+          description: Invalid Kakao authorization code
   /api/v1/auth/token/reissue:
     post:
       tags:
@@ -76,12 +76,22 @@ components:
     KakaoLoginRequest:
       type: object
       required:
-        - kakaoAccessToken
+        - authorizationCode
+        - redirectUri
       properties:
-        kakaoAccessToken:
+        authorizationCode:
           type: string
-          description: Access token issued by Kakao SDK/login flow
-          example: kakao-access-token-sample
+          description: Authorization code received from Kakao REST login redirect
+          example: kakao-authorization-code-sample
+        redirectUri:
+          type: string
+          description: Redirect URI used during the Kakao authorize request
+          example: bankramen://auth/kakao
+        state:
+          type: string
+          nullable: true
+          description: Optional state value used to verify the login round-trip
+          example: random-state-sample
     TokenReissueRequest:
       type: object
       required:

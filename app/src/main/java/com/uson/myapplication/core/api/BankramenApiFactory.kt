@@ -17,13 +17,15 @@ object BankramenApiFactory {
         appContextProvider = { context.applicationContext }
     }
 
-    fun createSystemApi(): SystemApi = createApiClient().createService(SystemApi::class.java)
+    fun createSystemApi(): SystemApi = createApiClient(includeSessionAuth = true)
+        .createService(SystemApi::class.java)
 
-    fun createAuthApi(): AuthApi = createApiClient().createService(AuthApi::class.java)
+    fun createAuthApi(): AuthApi = createApiClient(includeSessionAuth = false)
+        .createService(AuthApi::class.java)
 
-    private fun createApiClient(): ApiClient {
+    private fun createApiClient(includeSessionAuth: Boolean): ApiClient {
         val context = appContextProvider?.invoke()
-        val okHttpClientBuilder = if (context != null) {
+        val okHttpClientBuilder = if (includeSessionAuth && context != null) {
             OkHttpClient.Builder()
                 .addInterceptor(AuthHeaderInterceptor(AuthGraph.sessionStore(context)))
                 .authenticator(AuthTokenAuthenticator(AuthGraph.sessionManager(context)))
@@ -37,7 +39,7 @@ object BankramenApiFactory {
         )
             .setLogger { }
 
-        if (BuildConfig.API_AUTH_TOKEN.isNotBlank() && context == null) {
+        if (includeSessionAuth && BuildConfig.API_AUTH_TOKEN.isNotBlank() && context == null) {
             val staticAuthorizationClient = ApiClient(baseUrl = BuildConfig.API_BASE_URL)
                 .setLogger { }
             return staticAuthorizationClient.addAuthorization(

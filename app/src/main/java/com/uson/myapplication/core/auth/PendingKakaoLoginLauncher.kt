@@ -3,7 +3,7 @@ package com.uson.myapplication.core.auth
 import android.content.Context
 
 object PendingKakaoLoginLauncher : KakaoLoginLauncher {
-    override suspend fun login(context: Context): Result<String> = Result.failure(
-        IllegalStateException("Kakao SDK login is not connected yet"),
+    override fun launch(context: Context): Result<Unit> = Result.failure(
+        IllegalStateException("Kakao REST login launcher is not connected yet"),
     )
 }

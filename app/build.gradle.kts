@@ -1,4 +1,5 @@
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+import java.net.URI
 import java.util.Properties
 
 plugins {
@@ -18,7 +19,12 @@ val localProperties = Properties().apply {
 }
 val apiBaseUrl = localProperties.getProperty("api.baseUrl", "https://api.example.com/")
 val apiAuthToken = localProperties.getProperty("api.authToken", "")
-val kakaoNativeAppKey = localProperties.getProperty("kakao.nativeAppKey", "")
+val kakaoRestApiKey = localProperties.getProperty("kakao.restApiKey", "")
+val kakaoRedirectUri = localProperties.getProperty("kakao.redirectUri", "bankramen://auth/kakao")
+val parsedKakaoRedirectUri = URI(kakaoRedirectUri)
+val kakaoRedirectScheme = parsedKakaoRedirectUri.scheme ?: "bankramen"
+val kakaoRedirectHost = parsedKakaoRedirectUri.host ?: "auth"
+val kakaoRedirectPath = parsedKakaoRedirectUri.path?.takeIf { it.isNotBlank() } ?: "/kakao"
 
 tasks.register<GenerateTask>("generateBankramenApi") {
     generatorName.set("kotlin")
@@ -47,8 +53,11 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
         buildConfigField("String", "API_AUTH_TOKEN", "\"$apiAuthToken\"")
-        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoNativeAppKey\"")
-        manifestPlaceholders["kakaoScheme"] = "kakao$kakaoNativeAppKey"
+        buildConfigField("String", "KAKAO_REST_API_KEY", "\"$kakaoRestApiKey\"")
+        buildConfigField("String", "KAKAO_REDIRECT_URI", "\"$kakaoRedirectUri\"")
+        manifestPlaceholders["kakaoRedirectScheme"] = kakaoRedirectScheme
+        manifestPlaceholders["kakaoRedirectHost"] = kakaoRedirectHost
+        manifestPlaceholders["kakaoRedirectPath"] = kakaoRedirectPath
     }
 
     buildTypes {
@@ -108,8 +117,6 @@ dependencies {
     implementation(libs.google.gson)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    implementation(libs.kakao.user)
-    implementation(libs.kakao.auth)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
