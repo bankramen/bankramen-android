@@ -14,6 +14,7 @@ object TransactionNotificationParser {
     private val merchantPaymentRegex = Regex("^(.+?)에서\\s")
     private val merchantTransferRecipientRegex = Regex("^(.+?)(?:님께|님에게|에게)\\s")
     private val merchantTransferDestRegex = Regex("^(.+?)(?:으로|로)\\s")
+    private val selfTransferRegex = Regex("나한테\\s*송금")
 
     fun parse(sbn: StatusBarNotification): ParsedTransactionNotification? {
         if (!isSupportedPackage(sbn.packageName)) return null
@@ -49,6 +50,7 @@ object TransactionNotificationParser {
             .trim()
 
         if (title.isBlank() && body.isBlank()) return null
+        if (isSelfTransferNotification(title = title, body = body)) return null
 
         val amount = extractAmount(body.ifBlank { title })
         val transactionType = resolveTransactionType(title = title, body = body, amount = amount)
@@ -75,6 +77,9 @@ object TransactionNotificationParser {
             ?.getOrNull(1)
             ?.replace(",", "")
             ?.toLongOrNull()
+
+    private fun isSelfTransferNotification(title: String, body: String): Boolean =
+        selfTransferRegex.containsMatchIn("$title $body")
 
     private fun extractMerchant(body: String, title: String, type: TransactionType): String? {
         if (body.isNotBlank()) {
