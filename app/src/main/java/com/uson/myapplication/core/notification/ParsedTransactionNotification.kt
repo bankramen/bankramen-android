@@ -9,4 +9,5 @@ data class ParsedTransactionNotification(
     val merchant: String?,
     val timestamp: Long,
     val paymentMethod: String,
+    val transactionType: TransactionType,
 )

@@ -11,6 +11,9 @@ object TransactionNotificationParser {
     )
 
     private val amountRegex = Regex("([0-9][0-9,]*)원")
+    private val merchantPaymentRegex = Regex("^(.+?)에서\\s")
+    private val merchantTransferRecipientRegex = Regex("^(.+?)(?:님께|님에게|에게)\\s")
+    private val merchantTransferDestRegex = Regex("^(.+?)(?:으로|로)\\s")
 
     fun parse(sbn: StatusBarNotification): ParsedTransactionNotification? {
         if (!isSupportedPackage(sbn.packageName)) return null
@@ -19,6 +22,26 @@ object TransactionNotificationParser {
         val title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString().orEmpty()
         val text = extras.getCharSequence(Notification.EXTRA_TEXT)?.toString().orEmpty()
         val bigText = extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString().orEmpty()
+        return parse(
+            sourceKey = sbn.key,
+            packageName = sbn.packageName,
+            title = title,
+            text = text,
+            bigText = bigText,
+            timestamp = sbn.postTime,
+        )
+    }
+
+    internal fun parse(
+        sourceKey: String,
+        packageName: String,
+        title: String,
+        text: String,
+        bigText: String,
+        timestamp: Long,
+    ): ParsedTransactionNotification? {
+        if (!isSupportedPackage(packageName)) return null
+
         val body = listOf(text, bigText)
             .filter { it.isNotBlank() }
             .distinct()
@@ -28,16 +51,18 @@ object TransactionNotificationParser {
         if (title.isBlank() && body.isBlank()) return null
 
         val amount = extractAmount(body.ifBlank { title })
+        val transactionType = resolveTransactionType(title = title, body = body, amount = amount)
 
         return ParsedTransactionNotification(
-            sourceKey = sbn.key,
-            packageName = sbn.packageName,
+            sourceKey = sourceKey,
+            packageName = packageName,
             title = title,
             body = body,
             amount = amount,
-            merchant = title.ifBlank { null },
-            timestamp = sbn.postTime,
-            paymentMethod = resolvePaymentMethod(sbn.packageName),
+            merchant = extractMerchant(body = body, title = title, type = transactionType),
+            timestamp = timestamp,
+            paymentMethod = resolvePaymentMethod(packageName),
+            transactionType = transactionType,
         )
     }
 
@@ -51,10 +76,39 @@ object TransactionNotificationParser {
             ?.replace(",", "")
             ?.toLongOrNull()
 
+    private fun extractMerchant(body: String, title: String, type: TransactionType): String? {
+        if (body.isNotBlank()) {
+            val extracted = when (type) {
+                TransactionType.PAYMENT ->
+                    merchantPaymentRegex.find(body)?.groupValues?.getOrNull(1)
+                TransactionType.TRANSFER_OUT ->
+                    merchantTransferRecipientRegex.find(body)?.groupValues?.getOrNull(1)
+                        ?: merchantTransferDestRegex.find(body)?.groupValues?.getOrNull(1)
+                else -> null
+            }
+            if (!extracted.isNullOrBlank()) return extracted.trim()
+        }
+        return title.ifBlank { null }
+    }
+
     private fun resolvePaymentMethod(packageName: String): String = when {
         packageName.startsWith("com.kakaopay") -> "KAKAO_PAY"
         packageName.startsWith("viva.republica") -> "TOSS"
         packageName.startsWith("com.naver") -> "NAVER_PAY"
         else -> "UNKNOWN"
+    }
+
+    private fun resolveTransactionType(
+        title: String,
+        body: String,
+        amount: Long?,
+    ): TransactionType {
+        val haystack = "$title $body"
+        return when {
+            haystack.contains("입금") || haystack.contains("받음") -> TransactionType.INCOME
+            haystack.contains("이체") || haystack.contains("송금") -> TransactionType.TRANSFER_OUT
+            amount != null -> TransactionType.PAYMENT
+            else -> TransactionType.UNKNOWN
+        }
     }
 }

@@ -12,6 +12,8 @@ object BankramenDatabaseProvider {
             context.applicationContext,
             BankramenDatabase::class.java,
             "bankramen.db",
+        ).addMigrations(
+            BankramenDatabase.MIGRATION_1_2,
         ).build().also { instance = it }
     }
 }

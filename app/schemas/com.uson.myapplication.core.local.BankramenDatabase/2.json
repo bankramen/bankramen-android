@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 1,
-    "identityHash": "41fc2b52503ceeaa83d61960fd2ff3a1",
+    "version": 2,
+    "identityHash": "45ad9e09cfc2496b8444e0e8f5d99b55",
     "entities": [
       {
         "tableName": "parsed_notifications",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sourceKey` TEXT NOT NULL, `packageName` TEXT NOT NULL, `title` TEXT NOT NULL, `body` TEXT NOT NULL, `amount` INTEGER, `merchant` TEXT, `timestamp` INTEGER NOT NULL, `paymentMethod` TEXT NOT NULL, `transactionType` TEXT NOT NULL, PRIMARY KEY(`sourceKey`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sourceKey` TEXT NOT NULL, `packageName` TEXT NOT NULL, `title` TEXT NOT NULL, `body` TEXT NOT NULL, `amount` INTEGER, `merchant` TEXT, `timestamp` INTEGER NOT NULL, `paymentMethod` TEXT NOT NULL, `transactionType` TEXT NOT NULL DEFAULT 'UNKNOWN', PRIMARY KEY(`sourceKey`))",
         "fields": [
           {
             "fieldPath": "sourceKey",
@@ -58,7 +58,8 @@
             "fieldPath": "transactionType",
             "columnName": "transactionType",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": true,
+            "defaultValue": "'UNKNOWN'"
           }
         ],
         "primaryKey": {
@@ -71,7 +72,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '41fc2b52503ceeaa83d61960fd2ff3a1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '45ad9e09cfc2496b8444e0e8f5d99b55')"
     ]
   }
 }

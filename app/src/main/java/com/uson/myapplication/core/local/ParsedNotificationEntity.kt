@@ -1,8 +1,10 @@
 package com.uson.myapplication.core.local
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.uson.myapplication.core.notification.ParsedTransactionNotification
+import com.uson.myapplication.core.notification.TransactionType
 
 @Entity(tableName = "parsed_notifications")
 data class ParsedNotificationEntity(
@@ -14,6 +16,7 @@ data class ParsedNotificationEntity(
     val merchant: String?,
     val timestamp: Long,
     val paymentMethod: String,
+    @ColumnInfo(defaultValue = "UNKNOWN") val transactionType: String,
 )
 
 fun ParsedTransactionNotification.toEntity(): ParsedNotificationEntity = ParsedNotificationEntity(
@@ -25,6 +28,7 @@ fun ParsedTransactionNotification.toEntity(): ParsedNotificationEntity = ParsedN
     merchant = merchant,
     timestamp = timestamp,
     paymentMethod = paymentMethod,
+    transactionType = transactionType.name,
 )
 
 fun ParsedNotificationEntity.toModel(): ParsedTransactionNotification = ParsedTransactionNotification(
@@ -36,4 +40,5 @@ fun ParsedNotificationEntity.toModel(): ParsedTransactionNotification = ParsedTr
     merchant = merchant,
     timestamp = timestamp,
     paymentMethod = paymentMethod,
+    transactionType = runCatching { TransactionType.valueOf(transactionType) }.getOrDefault(TransactionType.UNKNOWN),
 )
