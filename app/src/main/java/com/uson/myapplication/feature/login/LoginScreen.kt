@@ -1,7 +1,10 @@
 package com.uson.myapplication.feature.login
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,43 +40,53 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.uson.myapplication.ui.theme.BackgroundGray
+import com.uson.myapplication.R
 import com.uson.myapplication.ui.theme.BrandBlue
 import com.uson.myapplication.ui.theme.KakaoYellow
 import com.uson.myapplication.ui.theme.MyApplicationTheme
 import com.uson.myapplication.ui.theme.SecondaryText
 
-private data class IntroPage(
-    val emoji: String,
+private val OnboardingBlue = Color(0xFF3182F6)
+private val OnboardingBlueSoft = Color(0xFFE8F3FF)
+private val DotInactive = Color(0xFFD1D1D3)
+private val LoginBodyText = Color(0xFF8B95A1)
+
+private data class PostLoginOnboardingPage(
+    @DrawableRes val imageRes: Int,
     val title: String,
     val subtitle: String,
+    val imageWidth: androidx.compose.ui.unit.Dp,
+    val imageHeight: androidx.compose.ui.unit.Dp,
 )
 
-private val introPages = listOf(
-    IntroPage(
-        emoji = "🎁",
-        title = "흩어진 자산을\n한 화면에 모아봐요",
-        subtitle = "계좌, 카드, 생활비를 한 번에 정리해서\n오늘의 소비 흐름을 빠르게 파악할 수 있어요.",
+private val postLoginOnboardingPages = listOf(
+    PostLoginOnboardingPage(
+        imageRes = R.drawable.onboarding_wallet,
+        title = "계좌 등록 없이\n시작할 수 있어요",
+        subtitle = "직접 입력하여 가볍게 시작해보세요",
+        imageWidth = 120.dp,
+        imageHeight = 90.dp,
     ),
-    IntroPage(
-        emoji = "📊",
-        title = "월별 리포트로\n소비 패턴을 확인해요",
-        subtitle = "언제, 어디서, 얼마나 썼는지 비교해서\n절약 포인트를 바로 찾을 수 있어요.",
+    PostLoginOnboardingPage(
+        imageRes = R.drawable.onboarding_chart,
+        title = "내 소비 패턴을\n한눈에 분석해요",
+        subtitle = "어디에 얼마나 썼는지 쉽게 확인하세요",
+        imageWidth = 167.dp,
+        imageHeight = 88.dp,
     ),
-    IntroPage(
-        emoji = "💸",
-        title = "지출 카테고리를\n자동으로 정리해요",
-        subtitle = "식비, 쇼핑, 교통처럼 자주 쓰는 항목을\n깔끔하게 모아서 보기 쉽게 보여드려요.",
-    ),
-    IntroPage(
-        emoji = "🔔",
-        title = "정기결제와 예산 알림을\n놓치지 않아요",
-        subtitle = "예산 초과와 결제 예정일을 알려줘서\n지출 관리가 훨씬 쉬워져요.",
+    PostLoginOnboardingPage(
+        imageRes = R.drawable.onboarding_bell,
+        title = "놓치기 쉬운 결제도\n알아서 챙겨드려요",
+        subtitle = "정기결제 알림으로 똑똑하게 관리하세요",
+        imageWidth = 120.dp,
+        imageHeight = 93.dp,
     ),
 )
 
@@ -83,272 +96,220 @@ fun LoginScreen(
     onPrimaryClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var pageIndex by rememberSaveable { mutableIntStateOf(0) }
-    val isFinalPage = pageIndex == introPages.size
-
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = BackgroundGray,
+        color = Color.White,
     ) {
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(BackgroundGray),
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .statusBarsPadding()
-                    .background(BackgroundGray),
+            Spacer(modifier = Modifier.weight(1f))
+            LogoMark()
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(
+                text = "금융의 모든 것\n뱅크라면에서",
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontSize = 20.sp,
+                    lineHeight = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                ),
             )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 56.dp)
-                    .background(Color.White),
-            ) {
-                if (isFinalPage) {
-                    FinalLoginPage(
-                        notificationReady = uiState.notificationAccessGranted,
-                        onPrimaryClick = onPrimaryClick,
-                    )
-                } else {
-                    IntroContent(
-                        page = introPages[pageIndex],
-                        pageIndex = pageIndex,
-                        pageCount = introPages.size + 1,
-                        onBack = { pageIndex = (pageIndex - 1).coerceAtLeast(0) },
-                        onNext = { pageIndex += 1 },
+            Spacer(modifier = Modifier.height(28.dp))
+            Text(
+                text = "흩어진 내 자산을 한눈에 확인하고\n똑똑하게 관리하세요",
+                color = LoginBodyText,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontSize = 14.sp,
+                    lineHeight = 24.sp,
+                    fontWeight = FontWeight.Medium,
+                ),
+            )
+            if (uiState.authStatusLabel != "로그인 필요") {
+                Spacer(modifier = Modifier.height(18.dp))
+                Text(
+                    text = uiState.authStatusLabel,
+                    color = BrandBlue,
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontSize = 13.sp,
+                        lineHeight = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    ),
+                )
+                if (uiState.authStatusDetail.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = uiState.authStatusDetail,
+                        color = SecondaryText,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontSize = 12.sp,
+                            lineHeight = 18.sp,
+                            fontWeight = FontWeight.Medium,
+                        ),
                     )
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun IntroContent(
-    page: IntroPage,
-    pageIndex: Int,
-    pageCount: Int,
-    onBack: () -> Unit,
-    onNext: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = if (pageIndex == 0) "" else "←",
-                modifier = Modifier
-                    .width(24.dp)
-                    .padding(top = 6.dp)
-                    .then(if (pageIndex == 0) Modifier else Modifier),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                ),
-                color = Color.Black,
-            )
-            if (pageIndex > 0) {
-                Text(
-                    text = "←",
-                    modifier = Modifier
-                        .width(24.dp)
-                        .offset(x = (-24).dp)
-                        .padding(top = 6.dp),
-                    color = Color.Transparent,
-                )
-            }
-            Text(
-                text = "${pageIndex + 1} / $pageCount",
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                ),
-                color = SecondaryText,
-            )
-        }
-
-        if (pageIndex > 0) {
-            Row(
+            Spacer(modifier = Modifier.weight(1.72f))
+            Button(
+                onClick = onPrimaryClick,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .offset(y = (-28).dp),
-                horizontalArrangement = Arrangement.Start,
-            ) {
-                Text(
-                    text = "←",
-                    modifier = Modifier.padding(top = 6.dp),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                    ),
-                    color = Color.Black,
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(132.dp))
-        IntroIconTile(emoji = page.emoji)
-        Spacer(modifier = Modifier.height(28.dp))
-        Text(
-            text = page.title,
-            color = Color.Black,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineMedium.copy(
-                fontSize = 24.sp,
-                lineHeight = 34.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = (-0.3).sp,
-            ),
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = page.subtitle,
-            color = SecondaryText,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge.copy(
-                fontSize = 14.sp,
-                lineHeight = 24.sp,
-                fontWeight = FontWeight.Medium,
-            ),
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        PageIndicator(current = pageIndex, total = pageCount)
-        Spacer(modifier = Modifier.height(20.dp))
-        Button(
-            onClick = onNext,
-            modifier = Modifier
-                .fillMaxWidth()
-                .navigationBarsPadding()
-                .padding(bottom = 56.dp)
-                .height(52.dp),
-            shape = RoundedCornerShape(14.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = BrandBlue,
-                contentColor = Color.White,
-            ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
-        ) {
-            Text(
-                text = "다음",
-                style = MaterialTheme.typography.labelLarge.copy(
-                    fontSize = 14.sp,
-                    lineHeight = 22.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = KakaoYellow,
+                    contentColor = Color.Black,
                 ),
-            )
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
+                contentPadding = PaddingValues(horizontal = 20.dp),
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    KakaoTalkIcon()
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = "카카오로 시작하기",
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            fontSize = 13.sp,
+                            lineHeight = 24.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        ),
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(64.dp))
         }
     }
 }
 
 @Composable
-private fun FinalLoginPage(
-    notificationReady: Boolean,
-    onPrimaryClick: () -> Unit,
+fun PostLoginOnboardingScreen(
+    onFinished: () -> Unit,
+    onSkip: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    var pageIndex by rememberSaveable { mutableIntStateOf(0) }
+    val page = postLoginOnboardingPages[pageIndex]
+
+    Surface(
+        modifier = modifier.fillMaxSize(),
+        color = Color.White,
     ) {
-        Spacer(modifier = Modifier.height(184.dp))
-        LogoMark()
-        Spacer(modifier = Modifier.height(24.dp))
-        Text(
-            text = "금융의 모든 것\n뱅크라면에서",
-            color = Color.Black,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineMedium.copy(
-                fontSize = 20.sp,
-                lineHeight = 32.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = (-0.3).sp,
-            ),
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Text(
-            text = if (notificationReady) {
-                "준비가 끝났어요. 카카오 로그인 후\n지출과 리포트를 바로 확인할 수 있어요."
-            } else {
-                "흩어진 내 자산을 한눈에 확인하고\n똑똑하게 관리하세요"
-            },
-            color = SecondaryText,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge.copy(
-                fontSize = 14.sp,
-                lineHeight = 24.sp,
-                fontWeight = FontWeight.Medium,
-            ),
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        PageIndicator(current = introPages.size, total = introPages.size + 1)
-        Spacer(modifier = Modifier.height(20.dp))
-        Button(
-            onClick = onPrimaryClick,
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
+                .statusBarsPadding()
                 .navigationBarsPadding()
-                .padding(bottom = 56.dp)
-                .height(56.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = KakaoYellow,
-                contentColor = Color.Black,
-            ),
-            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
-            contentPadding = PaddingValues(horizontal = 20.dp),
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            Spacer(modifier = Modifier.height(48.dp))
             Row(
-                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                KakaoTalkIcon()
-                Spacer(modifier = Modifier.width(7.dp))
+                PageIndicator(
+                    current = pageIndex,
+                    total = postLoginOnboardingPages.size,
+                )
                 Text(
-                    text = "카카오로 시작하기",
+                    text = "건너뛰기",
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(onClick = onSkip)
+                        .padding(horizontal = 4.dp, vertical = 6.dp),
+                    color = Color(0xFF71717A),
                     style = MaterialTheme.typography.labelLarge.copy(
-                        fontSize = 13.sp,
+                        fontSize = 12.sp,
+                        lineHeight = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    ),
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            OnboardingArtwork(page = page)
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(
+                text = page.title,
+                color = Color.Black,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontSize = 20.sp,
+                    lineHeight = 33.sp,
+                    fontWeight = FontWeight.Bold,
+                ),
+            )
+            Spacer(modifier = Modifier.height(22.dp))
+            Text(
+                text = page.subtitle,
+                color = Color(0xFF71717A),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontSize = 15.sp,
+                    lineHeight = 28.sp,
+                    fontWeight = FontWeight.Normal,
+                ),
+            )
+            Spacer(modifier = Modifier.weight(1.55f))
+            Button(
+                onClick = {
+                    if (pageIndex == postLoginOnboardingPages.lastIndex) {
+                        onFinished()
+                    } else {
+                        pageIndex += 1
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = OnboardingBlue,
+                    contentColor = Color.White,
+                ),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
+            ) {
+                Text(
+                    text = if (pageIndex == postLoginOnboardingPages.lastIndex) "시작하기" else "다음",
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontSize = 15.sp,
                         lineHeight = 24.sp,
                         fontWeight = FontWeight.SemiBold,
                     ),
                 )
             }
+            Spacer(modifier = Modifier.height(36.dp))
         }
     }
 }
 
 @Composable
-private fun IntroIconTile(emoji: String) {
+private fun OnboardingArtwork(page: PostLoginOnboardingPage) {
     Box(
         modifier = Modifier
-            .size(92.dp)
-            .clip(RoundedCornerShape(28.dp))
-            .background(Color(0xFFF4F8FF)),
+            .size(128.dp)
+            .clip(CircleShape)
+            .background(OnboardingBlueSoft),
         contentAlignment = Alignment.Center,
     ) {
-        Box(
-            modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape)
-                .background(Color.White),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = emoji,
-                fontSize = 28.sp,
-            )
-        }
+        Image(
+            painter = painterResource(id = page.imageRes),
+            contentDescription = null,
+            modifier = Modifier.size(width = page.imageWidth, height = page.imageHeight),
+            contentScale = ContentScale.Fit,
+        )
     }
 }
 
@@ -357,14 +318,16 @@ private fun PageIndicator(
     current: Int,
     total: Int,
 ) {
-    val dots = remember(total) { List(total) { it } }
-    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        dots.forEach { index ->
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        repeat(total) { index ->
             Box(
                 modifier = Modifier
-                    .size(if (index == current) 18.dp else 6.dp, 6.dp)
+                    .size(width = if (index == current) 24.dp else 6.dp, height = 6.dp)
                     .clip(RoundedCornerShape(999.dp))
-                    .background(if (index == current) BrandBlue else Color(0xFFD9E2EC)),
+                    .background(if (index == current) OnboardingBlue else DotInactive),
             )
         }
     }
@@ -374,12 +337,12 @@ private fun PageIndicator(
 private fun LogoMark(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .size(84.dp)
+            .size(80.dp)
             .shadow(
                 elevation = 16.dp,
                 shape = RoundedCornerShape(24.dp),
-                spotColor = BrandBlue.copy(alpha = 0.20f),
-                ambientColor = BrandBlue.copy(alpha = 0.20f),
+                spotColor = BrandBlue.copy(alpha = 0.22f),
+                ambientColor = BrandBlue.copy(alpha = 0.22f),
             )
             .background(
                 color = BrandBlue,
@@ -393,9 +356,8 @@ private fun LogoMark(modifier: Modifier = Modifier) {
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleLarge.copy(
                 fontSize = 18.sp,
-                lineHeight = 20.sp,
+                lineHeight = 23.sp,
                 fontWeight = FontWeight.Bold,
-                letterSpacing = (-0.3).sp,
             ),
         )
     }
@@ -423,19 +385,28 @@ private fun KakaoTalkIcon(modifier: Modifier = Modifier) {
                 lineTo(size.width * 0.24f, size.height * 0.99f)
                 lineTo(size.width * 0.40f, size.height * 0.92f)
                 cubicTo(
-                    size.width * 0.44f, size.height * 0.93f,
-                    size.width * 0.47f, size.height * 0.93f,
-                    size.width * 0.5f, size.height * 0.93f,
+                    size.width * 0.44f,
+                    size.height * 0.93f,
+                    size.width * 0.47f,
+                    size.height * 0.93f,
+                    size.width * 0.5f,
+                    size.height * 0.93f,
                 )
                 cubicTo(
-                    size.width * 0.84f, size.height * 0.93f,
-                    size.width * 0.97f, size.height * 0.75f,
-                    size.width * 0.97f, size.height * 0.50f,
+                    size.width * 0.84f,
+                    size.height * 0.93f,
+                    size.width * 0.97f,
+                    size.height * 0.75f,
+                    size.width * 0.97f,
+                    size.height * 0.50f,
                 )
                 cubicTo(
-                    size.width * 0.97f, size.height * 0.32f,
-                    size.width * 0.84f, size.height * 0.14f,
-                    size.width * 0.5f, size.height * 0.14f,
+                    size.width * 0.97f,
+                    size.height * 0.32f,
+                    size.width * 0.84f,
+                    size.height * 0.14f,
+                    size.width * 0.5f,
+                    size.height * 0.14f,
                 )
                 close()
             }
@@ -455,7 +426,6 @@ private fun KakaoTalkIcon(modifier: Modifier = Modifier) {
                 fontSize = 4.5.sp,
                 lineHeight = 4.5.sp,
                 fontWeight = FontWeight.Black,
-                letterSpacing = (-0.15).sp,
             ),
         )
     }
@@ -468,6 +438,17 @@ private fun LoginScreenPreview() {
         LoginScreen(
             uiState = LoginUiState(),
             onPrimaryClick = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun PostLoginOnboardingScreenPreview() {
+    MyApplicationTheme(darkTheme = false, dynamicColor = false) {
+        PostLoginOnboardingScreen(
+            onFinished = {},
+            onSkip = {},
         )
     }
 }

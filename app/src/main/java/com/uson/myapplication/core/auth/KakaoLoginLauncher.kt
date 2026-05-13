@@ -3,5 +3,5 @@ package com.uson.myapplication.core.auth
 import android.content.Context
 
 fun interface KakaoLoginLauncher {
-    fun launch(context: Context): Result<Unit>
+    suspend fun launch(context: Context): Result<Unit>
 }

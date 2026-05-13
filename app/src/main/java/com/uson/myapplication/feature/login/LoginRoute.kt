@@ -13,7 +13,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun LoginRoute(
     viewModel: LoginViewModel = viewModel(),
     onLoginCompleted: () -> Unit = {},
-    onOpenShowcase: () -> Unit = {},
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -22,7 +21,6 @@ fun LoginRoute(
     DisposableEffect(lifecycleOwner, viewModel) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
-                viewModel.refreshOverview()
                 viewModel.consumePendingKakaoLogin(onSuccess = onLoginCompleted)
             }
         }
@@ -33,18 +31,11 @@ fun LoginRoute(
         }
     }
 
-    AuthLandingScreen(
+    LoginScreen(
         uiState = uiState.value,
-        onOpenShowcase = onOpenShowcase,
         onPrimaryClick = {
-            if (uiState.value.isAuthenticated) {
-                viewModel.onAuthenticatedEntry()
-                onLoginCompleted()
-                Toast.makeText(context, "자동 로그인 세션이 준비되어 있어요.", Toast.LENGTH_SHORT).show()
-            } else {
-                viewModel.startKakaoLogin(context = context)
-                Toast.makeText(context, "카카오 인증 화면으로 이동합니다.", Toast.LENGTH_SHORT).show()
-            }
+            viewModel.startKakaoLogin(context = context)
+            Toast.makeText(context, "카카오 인증 화면으로 이동합니다.", Toast.LENGTH_SHORT).show()
         },
     )
 }

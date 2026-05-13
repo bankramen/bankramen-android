@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.openapi.generator)
+    alias(libs.plugins.google.services)
 }
 
 val generatedOpenApiDir = layout.buildDirectory.dir("generated/openapi")
@@ -17,10 +18,16 @@ val localProperties = Properties().apply {
         localPropertiesFile.inputStream().use(::load)
     }
 }
-val apiBaseUrl = localProperties.getProperty("api.baseUrl", "https://api.example.com/")
-val apiAuthToken = localProperties.getProperty("api.authToken", "")
-val kakaoRestApiKey = localProperties.getProperty("kakao.restApiKey", "")
-val kakaoRedirectUri = localProperties.getProperty("kakao.redirectUri", "bankramen://auth/kakao")
+
+fun localProperty(name: String): String = localProperties.getProperty(name)
+    ?: providers.gradleProperty(name).orNull
+    ?: ""
+
+fun String.toBuildConfigString(): String = "\"${replace("\\", "\\\\").replace("\"", "\\\"")}\""
+
+val apiBaseUrl = localProperty("BaseUrl")
+val apiHostIp = localProperty("api.hostIp")
+val kakaoRedirectUri = localProperty("kakao.redirectUri").ifBlank { "bankramen://auth/kakao" }
 val parsedKakaoRedirectUri = URI(kakaoRedirectUri)
 val kakaoRedirectScheme = parsedKakaoRedirectUri.scheme ?: "bankramen"
 val kakaoRedirectHost = parsedKakaoRedirectUri.host ?: "auth"
@@ -28,13 +35,16 @@ val kakaoRedirectPath = parsedKakaoRedirectUri.path?.takeIf { it.isNotBlank() } 
 
 tasks.register<GenerateTask>("generateBankramenApi") {
     generatorName.set("kotlin")
-    inputSpec.set("$rootDir/openapi/bankramen-api.yaml")
+    inputSpec.set("$rootDir/openapi/bankramen-api.json")
     outputDir.set(generatedOpenApiDir.get().asFile.path)
     apiPackage.set("com.uson.myapplication.generated.api")
     modelPackage.set("com.uson.myapplication.generated.model")
     packageName.set("com.uson.myapplication.generated")
     configFile.set("$rootDir/openapi/openapi-generator-config.json")
     validateSpec.set(true)
+    doFirst {
+        delete(generatedOpenApiDir)
+    }
 }
 
 android {
@@ -51,10 +61,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
-        buildConfigField("String", "API_AUTH_TOKEN", "\"$apiAuthToken\"")
-        buildConfigField("String", "KAKAO_REST_API_KEY", "\"$kakaoRestApiKey\"")
-        buildConfigField("String", "KAKAO_REDIRECT_URI", "\"$kakaoRedirectUri\"")
+        buildConfigField("String", "API_BASE_URL", apiBaseUrl.toBuildConfigString())
+        buildConfigField("String", "API_HOST_IP", apiHostIp.toBuildConfigString())
+        buildConfigField("String", "KAKAO_REDIRECT_URI", kakaoRedirectUri.toBuildConfigString())
         manifestPlaceholders["kakaoRedirectScheme"] = kakaoRedirectScheme
         manifestPlaceholders["kakaoRedirectHost"] = kakaoRedirectHost
         manifestPlaceholders["kakaoRedirectPath"] = kakaoRedirectPath
@@ -118,6 +127,8 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

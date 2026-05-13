@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "406317523009",
+    "project_id": "bankramen-7ce26",
+    "storage_bucket": "bankramen-7ce26.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406317523009:android:46e0bc8201d191ece6e6c0",
+        "android_client_info": {
+          "package_name": "com.uson.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYFhjU5uGHz77YZaxl7UiFSRissHL6LNs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,19 +2,17 @@ package com.uson.myapplication.feature.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,6 +33,8 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -42,96 +42,65 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uson.myapplication.ui.theme.BackgroundGray
 import com.uson.myapplication.ui.theme.BrandBlue
-import com.uson.myapplication.ui.theme.KakaoYellow
 import com.uson.myapplication.ui.theme.MyApplicationTheme
 import com.uson.myapplication.ui.theme.SecondaryText
-import androidx.compose.ui.graphics.Color
 
 private enum class MainTab(val label: String, val icon: String) {
-    Home(label = "홈", icon = "⌂"),
-    Stats(label = "통계", icon = "◔"),
-    Recurring(label = "정기결제", icon = "↻"),
-    Alerts(label = "알림", icon = "🔔"),
+    Home("홈", "⌂"),
+    Stats("통계", "◔"),
+    Recurring("정기결제", "↻"),
+    Alerts("알림", "🔔"),
 }
 
-private enum class HomeDestination(val tab: MainTab) {
-    Dashboard(tab = MainTab.Home),
-    AddEntry(tab = MainTab.Home),
-    SpendingHistory(tab = MainTab.Home),
-    StatsOverview(tab = MainTab.Stats),
-    MonthlyReport(tab = MainTab.Stats),
-    Cashflow(tab = MainTab.Stats),
-    RecurringOverview(tab = MainTab.Recurring),
-    RecurringDetail(tab = MainTab.Recurring),
-    AlertsOverview(tab = MainTab.Alerts),
-    AlertDetail(tab = MainTab.Alerts),
-    AlertSettings(tab = MainTab.Alerts),
+private enum class OverlaySheet {
+    AddEntry,
+    EditCategory,
+    AddRecurring,
 }
 
-private data class TransactionItem(
+private data class CategoryChoice(
+    val code: String,
+    val label: String,
     val icon: String,
-    val merchant: String,
+)
+
+private val categoryChoices = listOf(
+    CategoryChoice("FOOD", "식비", "🍔"),
+    CategoryChoice("CAFE_SNACK", "카페/간식", "🍹"),
+    CategoryChoice("CONVENIENCE_MART_MISC", "편의점/마트/잡화", "🏪"),
+    CategoryChoice("SHOPPING", "쇼핑", "🛍"),
+    CategoryChoice("HOBBY_LEISURE", "취미/여가", "🎮"),
+    CategoryChoice("HEALTH_FITNESS", "의료/건강/피트니스", "🏥"),
+    CategoryChoice("BEAUTY", "미용", "🔎"),
+    CategoryChoice("TRANSPORT_CAR", "교통/자동차", "🚌"),
+    CategoryChoice("TRAVEL_STAY", "여행/숙박", "✈"),
+    CategoryChoice("EDUCATION", "교육", "🎓"),
+    CategoryChoice("LIVING", "생활", "🛁"),
+    CategoryChoice("DONATION_SPONSORSHIP", "기부/후원", "❤"),
+    CategoryChoice("UNCATEGORIZED", "카테고리 없음", "◌"),
+    CategoryChoice("ATM_WITHDRAWAL", "ATM 출금", "🏧"),
+    CategoryChoice("TRANSFER", "이체", "↔"),
+    CategoryChoice("SALARY", "급여", "💰"),
+    CategoryChoice("SAVINGS_INVESTMENT", "저축/투자", "📈"),
+)
+
+data class EditableTransaction(
+    val title: String,
     val time: String,
     val category: String,
-    val amount: String,
-    val positive: Boolean = false,
-)
-
-private data class StatBar(
-    val label: String,
-    val value: Float,
-    val color: Color,
-)
-
-private data class RecurringPayment(
+    val amountLabel: String,
+    val positive: Boolean,
     val icon: String,
-    val name: String,
-    val cycle: String,
-    val amount: String,
-    val enabled: Boolean,
-)
-
-private data class AlertItem(
-    val title: String,
-    val body: String,
-    val time: String,
-    val badge: String,
-)
-
-private val dashboardTransactions = listOf(
-    TransactionItem(icon = "🍔", merchant = "스타벅스 강남점", time = "14:30", category = "식비", amount = "-1,400원"),
-    TransactionItem(icon = "🛍", merchant = "쿠팡 로켓배송", time = "10:15", category = "쇼핑", amount = "-10,400원"),
-    TransactionItem(icon = "🚌", merchant = "지하철", time = "08:40", category = "교통", amount = "-1,400원"),
-    TransactionItem(icon = "💰", merchant = "월급", time = "어제", category = "급여", amount = "+3,500,000원", positive = true),
-    TransactionItem(icon = "🎮", merchant = "넷플릭스", time = "어제", category = "구독", amount = "-1,400원"),
-)
-
-private val expenseBreakdown = listOf(
-    StatBar(label = "식비", value = 0.82f, color = BrandBlue),
-    StatBar(label = "쇼핑", value = 0.61f, color = Color(0xFF85B4FF)),
-    StatBar(label = "교통", value = 0.33f, color = Color(0xFFC5DDFF)),
-    StatBar(label = "구독", value = 0.24f, color = Color(0xFFCBD5E1)),
-)
-
-private val recurringPayments = listOf(
-    RecurringPayment(icon = "🎬", name = "넷플릭스", cycle = "매월 3일", amount = "17,000원", enabled = true),
-    RecurringPayment(icon = "🎧", name = "멜론", cycle = "매월 8일", amount = "10,900원", enabled = true),
-    RecurringPayment(icon = "☁", name = "iCloud+", cycle = "매월 12일", amount = "4,400원", enabled = false),
-    RecurringPayment(icon = "🧾", name = "통신 요금", cycle = "매월 21일", amount = "59,000원", enabled = true),
-)
-
-private val alerts = listOf(
-    AlertItem(title = "예산 초과 알림", body = "식비 예산의 92%를 사용했어요. 오늘 저녁 지출은 잠시 확인해 보세요.", time = "방금", badge = "예산"),
-    AlertItem(title = "정기결제 예정", body = "넷플릭스 결제가 내일 예정되어 있어요. 잔액을 미리 확인해 두세요.", time = "1시간 전", badge = "정기결제"),
-    AlertItem(title = "월별 리포트 도착", body = "이번 달 소비 리포트가 준비됐어요. 지난달보다 7% 절약했어요.", time = "어제", badge = "리포트"),
 )
 
 @Composable
@@ -139,501 +108,565 @@ fun HomeScreen(
     userId: String?,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel(),
 ) {
-    var destinationKey by rememberSaveable { mutableStateOf(HomeDestination.Dashboard.name) }
-    val destination = HomeDestination.valueOf(destinationKey)
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    var currentTab by rememberSaveable { mutableStateOf(MainTab.Home) }
+    var statsMode by rememberSaveable { mutableIntStateOf(0) }
+    var showCategoryDetail by rememberSaveable { mutableStateOf(false) }
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
+    var overlaySheet by rememberSaveable { mutableStateOf<OverlaySheet?>(null) }
+    var entryType by rememberSaveable { mutableStateOf("지출") }
+    var selectedCategory by rememberSaveable { mutableStateOf("FOOD") }
+    var recurringSuggestionAccepted by rememberSaveable { mutableStateOf(false) }
+    val recurringToggles = remember { mutableStateListOf(true, true, true, false) }
 
-    fun navigate(target: HomeDestination) {
-        destinationKey = target.name
-    }
-
-    fun navigateToTab(tab: MainTab) {
-        destinationKey = when (tab) {
-            MainTab.Home -> HomeDestination.Dashboard.name
-            MainTab.Stats -> HomeDestination.StatsOverview.name
-            MainTab.Recurring -> HomeDestination.RecurringOverview.name
-            MainTab.Alerts -> HomeDestination.AlertsOverview.name
+    val editableTransactions = remember(state.expenses, state.incomes, state.shouldShowSkeleton) {
+        buildList {
+            if (state.expenses.isNotEmpty()) {
+                state.expenses.forEach {
+                    add(
+                        EditableTransaction(
+                            title = it.merchant,
+                            time = it.time,
+                            category = it.category,
+                            amountLabel = it.amountLabel,
+                            positive = false,
+                            icon = it.icon,
+                        ),
+                    )
+                }
+            }
+            if (state.incomes.isNotEmpty()) {
+                state.incomes.forEach {
+                    add(
+                        EditableTransaction(
+                            title = it.merchant,
+                            time = it.time,
+                            category = it.category,
+                            amountLabel = it.amountLabel,
+                            positive = true,
+                            icon = it.icon,
+                        ),
+                    )
+                }
+            }
+            if (isEmpty()) {
+                addAll(
+                    listOf(
+                        EditableTransaction("스타벅스 강남점", "14:30", "식비", "-4,500원", false, "🍔"),
+                        EditableTransaction("쿠팡 로켓배송", "10:15", "쇼핑", "-32,000원", false, "🛍"),
+                        EditableTransaction("지하철", "08:40", "교통", "-1,400원", false, "🚌"),
+                        EditableTransaction("월급", "어제", "급여", "+3,500,000원", true, "💰"),
+                        EditableTransaction("넷플릭스", "어제", "구독", "-17,000원", false, "🎮"),
+                    ),
+                )
+            }
         }
     }
+
+    val expensesForList = editableTransactions.filterNot(EditableTransaction::positive)
+    val incomesForList = editableTransactions.filter(EditableTransaction::positive)
+    val selectedRecurringCount = recurringToggles.count { it }
 
     Surface(
         modifier = modifier.fillMaxSize(),
         color = BackgroundGray,
     ) {
-        Scaffold(
-            containerColor = BackgroundGray,
-            bottomBar = {
-                MainBottomBar(
-                    selectedTab = destination.tab,
-                    onTabSelected = ::navigateToTab,
-                )
-            },
-        ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(BackgroundGray)
-                    .statusBarsPadding()
-                    .padding(innerPadding),
-            ) {
-                when (destination) {
-                    HomeDestination.Dashboard -> DashboardPage(
-                        userId = userId,
-                        onAddEntry = { navigate(HomeDestination.AddEntry) },
-                        onHistory = { navigate(HomeDestination.SpendingHistory) },
-                        onStats = { navigate(HomeDestination.MonthlyReport) },
-                        onRecurring = { navigate(HomeDestination.RecurringOverview) },
-                        onAlerts = { navigate(HomeDestination.AlertsOverview) },
+        Box(modifier = Modifier.fillMaxSize()) {
+            Scaffold(
+                containerColor = BackgroundGray,
+                bottomBar = {
+                    MainBottomBar(
+                        selectedTab = currentTab,
+                        onTabSelected = {
+                            currentTab = it
+                            showCategoryDetail = false
+                        },
                     )
+                },
+            ) { innerPadding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(BackgroundGray)
+                        .padding(innerPadding),
+                ) {
+                    when (currentTab) {
+                        MainTab.Home -> HomeDashboardPage(
+                            state = state,
+                            transactions = editableTransactions,
+                            onAddEntry = { overlaySheet = OverlaySheet.AddEntry },
+                            onDeleteRecent = { showDeleteDialog = true },
+                            onEditTransactionCategory = { overlaySheet = OverlaySheet.EditCategory },
+                            onOpenMonthlyReport = {
+                                currentTab = MainTab.Stats
+                                statsMode = 0
+                            },
+                            onOpenRecurring = { currentTab = MainTab.Recurring },
+                        )
 
-                    HomeDestination.AddEntry -> AddEntryPage(onBack = { navigate(HomeDestination.Dashboard) })
-                    HomeDestination.SpendingHistory -> SpendingHistoryPage(
-                        onBack = { navigate(HomeDestination.Dashboard) },
-                        onMonthlyReport = { navigate(HomeDestination.MonthlyReport) },
-                    )
+                        MainTab.Stats -> {
+                            if (showCategoryDetail) {
+                                CategoryExpenseDetailPage(
+                                    state = state,
+                                    onBack = { showCategoryDetail = false },
+                                )
+                            } else if (statsMode == 0) {
+                                MonthlyReportPage(
+                                    state = state,
+                                    onPreviousMonth = viewModel::showPreviousMonth,
+                                    onNextMonth = viewModel::showNextMonth,
+                                    onSelectMonthly = { statsMode = 0 },
+                                    onSelectCashflow = { statsMode = 1 },
+                                    onOpenCategoryDetail = { showCategoryDetail = true },
+                                )
+                            } else {
+                                IncomeExpensePage(
+                                    state = state,
+                                    onPreviousMonth = viewModel::showPreviousMonth,
+                                    onNextMonth = viewModel::showNextMonth,
+                                    onSelectMonthly = { statsMode = 0 },
+                                    onSelectCashflow = { statsMode = 1 },
+                                )
+                            }
+                        }
 
-                    HomeDestination.StatsOverview -> StatsOverviewPage(
-                        onMonthlyReport = { navigate(HomeDestination.MonthlyReport) },
-                        onCashflow = { navigate(HomeDestination.Cashflow) },
-                        onHistory = { navigate(HomeDestination.SpendingHistory) },
-                    )
+                        MainTab.Recurring -> RecurringPage(
+                            recurringCount = selectedRecurringCount,
+                            recurringToggles = recurringToggles,
+                            onAddRecurring = { overlaySheet = OverlaySheet.AddRecurring },
+                        )
 
-                    HomeDestination.MonthlyReport -> MonthlyReportPage(onBack = { navigate(HomeDestination.StatsOverview) })
-                    HomeDestination.Cashflow -> CashflowPage(onBack = { navigate(HomeDestination.StatsOverview) })
-                    HomeDestination.RecurringOverview -> RecurringOverviewPage(
-                        onDetail = { navigate(HomeDestination.RecurringDetail) },
-                        onReport = { navigate(HomeDestination.MonthlyReport) },
-                    )
-
-                    HomeDestination.RecurringDetail -> RecurringDetailPage(onBack = { navigate(HomeDestination.RecurringOverview) })
-                    HomeDestination.AlertsOverview -> AlertsOverviewPage(
-                        onAlertDetail = { navigate(HomeDestination.AlertDetail) },
-                        onSettings = { navigate(HomeDestination.AlertSettings) },
-                    )
-
-                    HomeDestination.AlertDetail -> AlertDetailPage(onBack = { navigate(HomeDestination.AlertsOverview) })
-                    HomeDestination.AlertSettings -> AlertSettingsPage(
-                        userId = userId,
-                        onBack = { navigate(HomeDestination.AlertsOverview) },
-                        onLogoutClick = onLogoutClick,
-                    )
+                        MainTab.Alerts -> AlertsPage(
+                            onAcceptSuggestion = {
+                                recurringSuggestionAccepted = true
+                                currentTab = MainTab.Recurring
+                            },
+                            suggestionAccepted = recurringSuggestionAccepted,
+                        )
+                    }
                 }
+            }
+
+            if (showDeleteDialog) {
+                DeleteEntryDialog(
+                    onDismiss = { showDeleteDialog = false },
+                    onDelete = { showDeleteDialog = false },
+                )
+            }
+
+            when (overlaySheet) {
+                OverlaySheet.AddEntry -> EntrySheet(
+                    title = "내역 추가",
+                    entryType = entryType,
+                    selectedCategory = selectedCategory,
+                    onSelectType = { entryType = it },
+                    onSelectCategory = { selectedCategory = it },
+                    onDismiss = { overlaySheet = null },
+                    onConfirm = { overlaySheet = null },
+                )
+
+                OverlaySheet.EditCategory -> CategoryEditSheet(
+                    selectedCategory = selectedCategory,
+                    transaction = expensesForList.firstOrNull() ?: editableTransactions.first(),
+                    onSelectCategory = { selectedCategory = it },
+                    onDismiss = { overlaySheet = null },
+                    onConfirm = { overlaySheet = null },
+                )
+
+                OverlaySheet.AddRecurring -> RecurringAddSheet(
+                    selectedCategory = selectedCategory,
+                    onSelectCategory = { selectedCategory = it },
+                    onDismiss = { overlaySheet = null },
+                    onConfirm = { overlaySheet = null },
+                )
+
+                null -> Unit
             }
         }
     }
 }
 
 @Composable
-private fun DashboardPage(
-    userId: String?,
+private fun HomeDashboardPage(
+    state: HomeUiState,
+    transactions: List<EditableTransaction>,
     onAddEntry: () -> Unit,
-    onHistory: () -> Unit,
-    onStats: () -> Unit,
-    onRecurring: () -> Unit,
-    onAlerts: () -> Unit,
+    onDeleteRecent: () -> Unit,
+    onEditTransactionCategory: () -> Unit,
+    onOpenMonthlyReport: () -> Unit,
+    onOpenRecurring: () -> Unit,
+) {
+    val expenseCardAmount = if (state.shouldShowSkeleton) "1,234,500원" else state.expenseLabel
+
+    ScreenColumn {
+        HomeTopBar()
+        HomeSummaryCard(
+            title = "이번 달 지출",
+            amount = expenseCardAmount,
+            buttonLabel = "내역 추가",
+            onClick = onAddEntry,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        HomeRecentCard(
+            transactions = transactions,
+            onDeleteRecent = onDeleteRecent,
+            onShowMore = {},
+            onEditTransactionCategory = onEditTransactionCategory,
+            showMoreLabel = false,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            HomeActionCard(
+                modifier = Modifier.weight(1f),
+                icon = "📊",
+                title = "월별 리포트",
+                subtitle = state.expenseComparisonLabel.takeIf { !state.shouldShowSkeleton } ?: "지난 달보다 덜 썼어요",
+                onClick = onOpenMonthlyReport,
+            )
+            HomeActionCard(
+                modifier = Modifier.weight(1f),
+                icon = "🔄",
+                title = "정기결제",
+                subtitle = "이번 달 3건 남았어요",
+                onClick = onOpenRecurring,
+            )
+        }
+    }
+}
+
+@Composable
+private fun MonthlyReportPage(
+    state: HomeUiState,
+    onPreviousMonth: () -> Unit,
+    onNextMonth: () -> Unit,
+    onSelectMonthly: () -> Unit,
+    onSelectCashflow: () -> Unit,
+    onOpenCategoryDetail: () -> Unit,
 ) {
     ScreenColumn {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFD1D1D3)),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = userId?.take(1)?.uppercase() ?: "",
-                    color = Color.White,
-                    style = HomeTextStyle.smallLabel.copy(fontWeight = FontWeight.Bold),
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .clickable(onClick = onAlerts),
-                contentAlignment = Alignment.TopEnd,
-            ) {
-                Text(
-                    text = "🔔",
-                    fontSize = 20.sp,
-                )
-                Box(
-                    modifier = Modifier
-                        .padding(top = 2.dp, end = 2.dp)
-                        .size(6.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red),
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        RoundedPanel {
-            Text(
-                text = "이번 달 지출",
-                style = HomeTextStyle.smallLabel,
-                color = Color(0xFF71717A),
+        ScreenHeader(title = "월별 리포트")
+        SegmentedTabs(
+            selectedIndex = 0,
+            labels = listOf("월별 리포트", "수입/지출 통계"),
+            onFirst = onSelectMonthly,
+            onSecond = onSelectCashflow,
+        )
+        LargeCard {
+            MonthSwitcher(
+                yearMonth = state.yearMonth,
+                onPreviousMonth = onPreviousMonth,
+                onNextMonth = onNextMonth,
             )
+            Spacer(modifier = Modifier.height(20.dp))
+            CenteredCaption("이번 달 총 지출")
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "1,234,500원",
-                style = HomeTextStyle.heroValue,
-                color = Color.Black,
+            CenteredHeadline(if (state.shouldShowSkeleton) "1,250,000원" else state.expenseLabel)
+            Spacer(modifier = Modifier.height(12.dp))
+            AccentPill(
+                text = state.expenseComparisonLabel.takeIf { !state.shouldShowSkeleton } ?: "지난달보다 17% 감소",
+                background = BrandBlue.copy(alpha = 0.12f),
+                textColor = BrandBlue,
             )
-            Spacer(modifier = Modifier.height(24.dp))
-            PrimaryButton(
-                text = "내역 추가",
-                containerColor = BrandBlue,
-                contentColor = Color.White,
-                onClick = onAddEntry,
+            Spacer(modifier = Modifier.height(28.dp))
+            CenteredCaption("지출 비교")
+            Spacer(modifier = Modifier.height(16.dp))
+            BarCompare(
+                leftLabel = "${state.previousMonth.monthValue}월",
+                rightLabel = "${state.yearMonth.monthValue}월",
+                leftAmount = state.previousExpense.formatWonOrEmpty(),
+                rightAmount = if (state.shouldShowSkeleton) "1,200,000원" else state.expenseLabel,
+                leftColor = Color(0xFF8CC7F4),
+                rightColor = BrandBlue,
+                leftRatio = barRatio(state.previousExpense, state.expense),
+                rightRatio = barRatio(state.expense, state.previousExpense),
+            )
+            Spacer(modifier = Modifier.height(28.dp))
+            CenteredCaption("수입 비교")
+            Spacer(modifier = Modifier.height(16.dp))
+            BarCompare(
+                leftLabel = "${state.previousMonth.monthValue}월",
+                rightLabel = "${state.yearMonth.monthValue}월",
+                leftAmount = state.previousIncome.formatWonOrEmpty(),
+                rightAmount = if (state.shouldShowSkeleton) "3,800,000원" else state.incomeLabel,
+                leftColor = Color(0xFFC7EECF),
+                rightColor = Color(0xFF69C66F),
+                leftRatio = barRatio(state.previousIncome, state.income),
+                rightRatio = barRatio(state.income, state.previousIncome),
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        RoundedPanel {
+        MediumCard {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Text(text = "최근 내역", style = HomeTextStyle.sectionTitle)
+                Text("카테고리별 지출", style = AppTypography.cardTitle)
                 Text(
-                    text = "🗑",
-                    modifier = Modifier.clickable(onClick = onHistory),
-                    fontSize = 18.sp,
+                    "자세히",
+                    modifier = Modifier.clickable(onClick = onOpenCategoryDetail),
+                    style = AppTypography.small,
+                    color = SecondaryText,
                 )
             }
-            Spacer(modifier = Modifier.height(12.dp))
-            dashboardTransactions.forEachIndexed { index, item ->
-                TransactionRow(item = item)
-                if (index != dashboardTransactions.lastIndex) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+            Spacer(modifier = Modifier.height(18.dp))
+            val rows = state.categories.ifEmpty {
+                listOf(
+                    CategoryExpenseItem("FOOD", "식비", 450_000L, 0.35f, true),
+                    CategoryExpenseItem("SALARY", "급여", 450_000L, 0.35f, false),
+                    CategoryExpenseItem("TRANSPORT_CAR", "교통", 450_000L, 0.35f, true),
+                    CategoryExpenseItem("TRAVEL_STAY", "여행", 450_000L, 0.35f, false),
+                )
+            }.take(4)
+            rows.forEachIndexed { index, item ->
+                CategorySummaryRow(item = item)
+                if (index != rows.lastIndex) Spacer(modifier = Modifier.height(16.dp))
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            InsightCard(
-                modifier = Modifier.weight(1f),
-                icon = "📊",
-                title = "월별 리포트",
-                body = "저번 달보다 덜 썼어요",
-                onClick = onStats,
-            )
-            InsightCard(
-                modifier = Modifier.weight(1f),
-                icon = "🔄",
-                title = "정기결제",
-                body = "이번 달 3건 남았어요",
-                onClick = onRecurring,
-            )
-        }
     }
 }
 
 @Composable
-private fun AddEntryPage(onBack: () -> Unit) {
-    ScreenColumn {
-        PageHeader(title = "내역 추가", onBack = onBack)
-        Spacer(modifier = Modifier.height(16.dp))
-        RoundedPanel {
-            ChipRow(labels = listOf("지출", "수입", "이체"), selected = "지출")
-            Spacer(modifier = Modifier.height(20.dp))
-            LabeledValue(label = "금액", value = "32,000원")
-            Spacer(modifier = Modifier.height(16.dp))
-            LabeledValue(label = "가맹점", value = "쿠팡 로켓배송")
-            Spacer(modifier = Modifier.height(16.dp))
-            LabeledValue(label = "카테고리", value = "쇼핑")
-            Spacer(modifier = Modifier.height(16.dp))
-            LabeledValue(label = "날짜", value = "2026년 4월 23일 10:15")
-            Spacer(modifier = Modifier.height(16.dp))
-            LabeledValue(label = "메모", value = "생활용품과 간식 구매")
-            Spacer(modifier = Modifier.height(24.dp))
-            PrimaryButton(
-                text = "내역 저장",
-                containerColor = BrandBlue,
-                contentColor = Color.White,
-                onClick = onBack,
-            )
-        }
-    }
-}
-
-@Composable
-private fun SpendingHistoryPage(
+private fun CategoryExpenseDetailPage(
+    state: HomeUiState,
     onBack: () -> Unit,
-    onMonthlyReport: () -> Unit,
 ) {
+    val rows = state.categories.ifEmpty {
+        listOf(
+            CategoryExpenseItem("FOOD", "식비", 450_000L, 0.35f, true),
+            CategoryExpenseItem("SALARY", "급여", 450_000L, 0.35f, false),
+            CategoryExpenseItem("TRANSPORT_CAR", "교통", 450_000L, 0.35f, true),
+            CategoryExpenseItem("TRAVEL_STAY", "여행", 450_000L, 0.35f, false),
+            CategoryExpenseItem("HOBBY_LEISURE", "취미", 450_000L, 0.35f, false),
+        )
+    }
+
     ScreenColumn {
-        PageHeader(title = "전체 내역", onBack = onBack)
-        Spacer(modifier = Modifier.height(16.dp))
-        RoundedPanel {
-            ChipRow(labels = listOf("전체", "수입", "지출"), selected = "전체")
-            Spacer(modifier = Modifier.height(20.dp))
-            SummaryStrip(
-                leftTitle = "이번 달",
-                leftValue = "1,389,000원",
-                rightTitle = "저축 가능",
-                rightValue = "+1,445,100원",
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "수입 내역", style = HomeTextStyle.sectionTitle)
-            Spacer(modifier = Modifier.height(8.dp))
-            TransactionRow(item = dashboardTransactions[3])
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(text = "지출 내역", style = HomeTextStyle.sectionTitle)
-            Spacer(modifier = Modifier.height(8.dp))
-            dashboardTransactions.filterNot { it.positive }.forEachIndexed { index, item ->
-                TransactionRow(item = item)
-                if (index != 3) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+        ScreenHeader(title = "카테고리별 지출", onBack = onBack)
+        LargeCard {
+            Text(state.topCategoryInsight, style = AppTypography.heroTitle, color = Color.Black)
+            Spacer(modifier = Modifier.height(10.dp))
+            Text("이번 달 총 ${if (state.shouldShowSkeleton) "1,234,500원" else state.expenseLabel} 지출", style = AppTypography.small, color = SecondaryText)
+            Spacer(modifier = Modifier.height(22.dp))
+            SegmentedProgressBar()
+            Spacer(modifier = Modifier.height(24.dp))
+            rows.forEachIndexed { index, item ->
+                CategoryDetailRow(item = item)
+                if (index != rows.lastIndex) Spacer(modifier = Modifier.height(18.dp))
             }
-            Spacer(modifier = Modifier.height(20.dp))
-            PrimaryButton(
-                text = "월별 리포트 보기",
-                containerColor = Color.White,
-                contentColor = BrandBlue,
-                borderColor = BrandBlue,
-                onClick = onMonthlyReport,
-            )
         }
     }
 }
 
 @Composable
-private fun StatsOverviewPage(
-    onMonthlyReport: () -> Unit,
-    onCashflow: () -> Unit,
-    onHistory: () -> Unit,
+private fun IncomeExpensePage(
+    state: HomeUiState,
+    onPreviousMonth: () -> Unit,
+    onNextMonth: () -> Unit,
+    onSelectMonthly: () -> Unit,
+    onSelectCashflow: () -> Unit,
 ) {
+    val incomes = state.incomes.ifEmpty {
+        listOf(TransactionItem("💰", "월급", "어제", "급여", 3_500_000L, positive = true))
+    }
+    val expenses = state.expenses.ifEmpty {
+        listOf(
+            TransactionItem("🍔", "스타벅스 강남점", "14:30", "식비", 1_400L, false),
+            TransactionItem("🛍", "쿠팡 로켓배송", "10:15", "쇼핑", 1_400L, false),
+            TransactionItem("🚌", "지하철", "08:40", "교통", 1_400L, false),
+            TransactionItem("🍔", "스타벅스 강남점", "14:30", "식비", 1_400L, false),
+            TransactionItem("🛍", "쿠팡 로켓배송", "10:15", "쇼핑", 1_400L, false),
+        )
+    }
+
     ScreenColumn {
-        PageHeader(title = "소비 통계")
-        Spacer(modifier = Modifier.height(16.dp))
-        RoundedPanel {
-            ChipRow(labels = listOf("이번 달", "지난 달", "카테고리"), selected = "이번 달")
+        ScreenHeader(title = "월별 리포트")
+        SegmentedTabs(
+            selectedIndex = 1,
+            labels = listOf("월별 리포트", "수입/지출 통계"),
+            onFirst = onSelectMonthly,
+            onSecond = onSelectCashflow,
+        )
+        LargeCard {
+            MonthSwitcher(
+                yearMonth = state.yearMonth,
+                onPreviousMonth = onPreviousMonth,
+                onNextMonth = onNextMonth,
+            )
+            Spacer(modifier = Modifier.height(22.dp))
+            CenteredCaption("이번 달 요약")
+            Spacer(modifier = Modifier.height(8.dp))
+            CenteredHeadline(if (state.shouldShowSkeleton) "+3,445,100원" else state.balanceLabel, color = BrandBlue)
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "월간 소비 추이", style = HomeTextStyle.sectionTitle)
+            IncomeExpenseRatioBar()
             Spacer(modifier = Modifier.height(16.dp))
+            LegendAmount("수입", if (state.shouldShowSkeleton) "+3,500,000원" else state.incomeLabel, BrandBlue)
+            Spacer(modifier = Modifier.height(12.dp))
+            LegendAmount("지출", if (state.shouldShowSkeleton) "-3,500,000원" else "-${state.expenseLabel}", Color.Red)
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        MediumCard {
+            Text("수입 내역", style = AppTypography.cardTitle)
+            Spacer(modifier = Modifier.height(16.dp))
+            incomes.forEachIndexed { index, item ->
+                TransactionRow(
+                    item = EditableTransaction(
+                        title = item.merchant,
+                        time = item.time,
+                        category = item.category,
+                        amountLabel = item.amountLabel,
+                        positive = true,
+                        icon = item.icon,
+                    ),
+                )
+                if (index != incomes.lastIndex) Spacer(modifier = Modifier.height(14.dp))
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        MediumCard {
+            Text("지출 내역", style = AppTypography.cardTitle)
+            Spacer(modifier = Modifier.height(16.dp))
+            expenses.forEachIndexed { index, item ->
+                TransactionRow(
+                    item = EditableTransaction(
+                        title = item.merchant,
+                        time = item.time,
+                        category = item.category,
+                        amountLabel = item.amountLabel,
+                        positive = false,
+                        icon = item.icon,
+                    ),
+                )
+                if (index != expenses.lastIndex) Spacer(modifier = Modifier.height(14.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun RecurringPage(
+    recurringCount: Int,
+    recurringToggles: List<Boolean>,
+    onAddRecurring: () -> Unit,
+) {
+    val recurringRows = listOf(
+        Triple("넷플릭스", "매월 15일", "17,000원"),
+        Triple("유튜브 프리미엄", "매월 15일", "17,000원"),
+        Triple("아파트 관리비", "매월 15일", "17,000원"),
+        Triple("통신비", "매월 10일", "55,000원"),
+    )
+
+    ScreenColumn {
+        ScreenHeader(title = "정기결제")
+        LargeCard {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Bottom,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                ChartColumn(label = "2월", value = "1.25M", barHeight = 96.dp, color = Color(0xFFB9D8FF))
-                ChartColumn(label = "3월", value = "1.48M", barHeight = 124.dp, color = BrandBlue)
-                ChartColumn(label = "4월", value = "1.23M", barHeight = 104.dp, color = Color(0xFF9BC4FF))
+                Text("이번 달 예정된 결제", style = AppTypography.small, color = SecondaryText)
+                AccentPill("${recurringCount}건", BrandBlue.copy(alpha = 0.12f), BrandBlue)
             }
-            Spacer(modifier = Modifier.height(20.dp))
-            expenseBreakdown.forEach { item ->
-                StatProgressRow(item = item)
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            PrimaryButton(
-                text = "월별 리포트",
-                containerColor = BrandBlue,
-                contentColor = Color.White,
-                onClick = onMonthlyReport,
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            PrimaryButton(
-                text = "수입 / 지출 분석",
-                containerColor = Color.White,
-                contentColor = BrandBlue,
-                borderColor = BrandBlue,
-                onClick = onCashflow,
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        RoundedPanel {
-            Text(text = "지출 흐름", style = HomeTextStyle.sectionTitle)
             Spacer(modifier = Modifier.height(16.dp))
-            SummaryStrip(
-                leftTitle = "평균 결제",
-                leftValue = "24,600원",
-                rightTitle = "가장 큰 지출",
-                rightValue = "쿠팡 320,000원",
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            PrimaryButton(
-                text = "전체 내역 보기",
-                containerColor = Color(0xFFF8FAFF),
-                contentColor = Color.Black,
-                onClick = onHistory,
-            )
-        }
-    }
-}
-
-@Composable
-private fun MonthlyReportPage(onBack: () -> Unit) {
-    ScreenColumn {
-        PageHeader(title = "월별 리포트", onBack = onBack)
-        Spacer(modifier = Modifier.height(16.dp))
-        RoundedPanel {
-            Text(text = "이번 달 요약", style = HomeTextStyle.sectionTitle)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "지난달보다 7% 절약했어요",
-                style = HomeTextStyle.supportText,
-                color = SecondaryText,
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            SummaryStrip(
-                leftTitle = "총 지출",
-                leftValue = "1,234,500원",
-                rightTitle = "절약 금액",
-                rightValue = "-94,000원",
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                HighlightCard(
-                    modifier = Modifier.weight(1f),
-                    title = "가장 많이 쓴 곳",
-                    body = "쇼핑",
-                    accent = Color(0xFFEEF5FF),
-                )
-                HighlightCard(
-                    modifier = Modifier.weight(1f),
-                    title = "가장 많이 아낀 곳",
-                    body = "교통",
-                    accent = Color(0xFFF3FBF6),
-                )
-            }
+            Text("177,450원", style = AppTypography.amount, color = Color.Black)
+            Spacer(modifier = Modifier.height(24.dp))
+            FilledButton("정기결제 추가하기", onAddRecurring)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        RoundedPanel {
-            Text(text = "카테고리 비교", style = HomeTextStyle.sectionTitle)
-            Spacer(modifier = Modifier.height(16.dp))
-            expenseBreakdown.forEach { item ->
-                StatProgressRow(item = item)
-                Spacer(modifier = Modifier.height(10.dp))
+        MediumCard {
+            Text("등록된 결제", style = AppTypography.cardTitle)
+            Spacer(modifier = Modifier.height(18.dp))
+            recurringRows.forEachIndexed { index, row ->
+                RecurringRow(
+                    title = row.first,
+                    subtitle = row.second,
+                    amount = row.third,
+                    enabled = recurringToggles.getOrElse(index) { false },
+                )
+                if (index != recurringRows.lastIndex) Spacer(modifier = Modifier.height(18.dp))
             }
         }
     }
 }
 
 @Composable
-private fun CashflowPage(onBack: () -> Unit) {
-    ScreenColumn {
-        PageHeader(title = "수입 / 지출 분석", onBack = onBack)
-        Spacer(modifier = Modifier.height(16.dp))
-        RoundedPanel {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                HighlightCard(
-                    modifier = Modifier.weight(1f),
-                    title = "총 수입",
-                    body = "+3,500,000원",
-                    accent = Color(0xFFF0F6FF),
-                    contentColor = BrandBlue,
-                )
-                HighlightCard(
-                    modifier = Modifier.weight(1f),
-                    title = "총 지출",
-                    body = "-1,234,500원",
-                    accent = Color(0xFFFFF4F4),
-                    contentColor = Color(0xFFE34D4D),
-                )
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "이번 달 현금 흐름", style = HomeTextStyle.sectionTitle)
-            Spacer(modifier = Modifier.height(12.dp))
-            StatProgressRow(item = StatBar("수입", 1f, BrandBlue))
-            Spacer(modifier = Modifier.height(10.dp))
-            StatProgressRow(item = StatBar("지출", 0.46f, Color(0xFFE34D4D)))
-            Spacer(modifier = Modifier.height(10.dp))
-            StatProgressRow(item = StatBar("저축", 0.34f, Color(0xFF5FB96F)))
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        RoundedPanel {
-            Text(text = "최근 변동", style = HomeTextStyle.sectionTitle)
-            Spacer(modifier = Modifier.height(12.dp))
-            dashboardTransactions.take(4).forEachIndexed { index, item ->
-                TransactionRow(item = item)
-                if (index != 3) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun RecurringOverviewPage(
-    onDetail: () -> Unit,
-    onReport: () -> Unit,
+private fun AlertsPage(
+    onAcceptSuggestion: () -> Unit,
+    suggestionAccepted: Boolean,
 ) {
     ScreenColumn {
-        PageHeader(title = "정기결제")
-        Spacer(modifier = Modifier.height(16.dp))
-        RoundedPanel {
-            Text(text = "이번 달 예정 금액", style = HomeTextStyle.smallLabel, color = SecondaryText)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "93,300원", style = HomeTextStyle.heroValue, color = Color.Black)
-            Spacer(modifier = Modifier.height(20.dp))
-            SummaryStrip(
-                leftTitle = "남은 건수",
-                leftValue = "3건",
-                rightTitle = "다음 결제",
-                rightValue = "넷플릭스 · 내일",
-            )
-        }
+        AlertsTopBar()
+        AlertListItem(
+            circleColor = Color(0xFFE5F0FF),
+            title = "내일 넷플릭스 결제일이에요",
+            body = "17,000원이 결제될 예정입니다.",
+            time = "2시간 전",
+            unread = true,
+        )
+        Spacer(modifier = Modifier.height(14.dp))
+        AlertListItem(
+            circleColor = Color(0xFFFFF0F1),
+            title = "10월 월별 리포트가 도착했어요",
+            body = "지난달보다 지출이 12% 늘었어요. 확인해보세요!",
+            time = "어제",
+            unread = false,
+        )
+        Spacer(modifier = Modifier.height(14.dp))
+        SuggestionAlert(
+            accepted = suggestionAccepted,
+            onAccept = onAcceptSuggestion,
+        )
+    }
+}
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        RoundedPanel {
-            Text(text = "서비스별 현황", style = HomeTextStyle.sectionTitle)
-            Spacer(modifier = Modifier.height(16.dp))
-            recurringPayments.chunked(2).forEach { rowItems ->
+@Composable
+private fun DeleteEntryDialog(
+    onDismiss: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.45f))
+            .clickable(onClick = onDismiss),
+    ) {
+        Surface(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(horizontal = 44.dp),
+            color = Color.White,
+            shape = RoundedCornerShape(20.dp),
+        ) {
+            Column(
+                modifier = Modifier.padding(horizontal = 28.dp, vertical = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Text("내역 삭제", style = AppTypography.cardTitle, color = Color.Black)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("이 내역을 삭제하시겠습니까?", style = AppTypography.small, color = SecondaryText)
+                Spacer(modifier = Modifier.height(20.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    rowItems.forEach { item ->
-                        RecurringCard(
-                            modifier = Modifier.weight(1f),
-                            item = item,
-                            onClick = onDetail,
-                        )
-                    }
-                    if (rowItems.size == 1) {
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-            PrimaryButton(
-                text = "월별 리포트와 함께 보기",
-                containerColor = Color.White,
-                contentColor = BrandBlue,
-                borderColor = BrandBlue,
-                onClick = onReport,
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        RoundedPanel {
-            Text(text = "자동 추적 중", style = HomeTextStyle.sectionTitle)
-            Spacer(modifier = Modifier.height(12.dp))
-            recurringPayments.forEachIndexed { index, item ->
-                RecurringRow(item = item)
-                if (index != recurringPayments.lastIndex) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 12.dp),
-                        color = Color(0xFFF1F5F9),
+                    DialogActionButton(
+                        label = "취소",
+                        background = Color(0xFFF4F6F8),
+                        content = Color.Black,
+                        onClick = onDismiss,
+                    )
+                    DialogActionButton(
+                        label = "삭제",
+                        background = Color(0xFFFF1F1F),
+                        content = Color.White,
+                        onClick = onDelete,
                     )
                 }
             }
@@ -642,199 +675,890 @@ private fun RecurringOverviewPage(
 }
 
 @Composable
-private fun RecurringDetailPage(onBack: () -> Unit) {
-    ScreenColumn {
-        PageHeader(title = "정기결제 상세", onBack = onBack)
-        Spacer(modifier = Modifier.height(16.dp))
-        RoundedPanel {
-            Text(text = "넷플릭스", style = HomeTextStyle.sectionTitle)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "매월 3일 · 17,000원", style = HomeTextStyle.supportText, color = SecondaryText)
-            Spacer(modifier = Modifier.height(20.dp))
-            LabeledValue(label = "결제 카드", value = "우리카드 체크")
-            Spacer(modifier = Modifier.height(16.dp))
-            LabeledValue(label = "알림", value = "결제 1일 전 푸시 알림")
-            Spacer(modifier = Modifier.height(16.dp))
-            LabeledValue(label = "메모", value = "공유 계정 갱신 전 확인 필요")
-            Spacer(modifier = Modifier.height(24.dp))
-            PrimaryButton(
-                text = "자동 추적 유지",
-                containerColor = BrandBlue,
-                contentColor = Color.White,
-                onClick = onBack,
-            )
+private fun EntrySheet(
+    title: String,
+    entryType: String,
+    selectedCategory: String,
+    onSelectType: (String) -> Unit,
+    onSelectCategory: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    BottomSheetShell(title = title, onDismiss = onDismiss) {
+        SegmentedControl(
+            selected = entryType,
+            labels = listOf("지출", "수입"),
+            onSelect = onSelectType,
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        LabeledAmountField("금액", "0", "원")
+        Spacer(modifier = Modifier.height(24.dp))
+        LabeledTextField("내역명", "어디서 쓰셨나요?")
+        Spacer(modifier = Modifier.height(24.dp))
+        Text("카테고리", style = AppTypography.small, color = SecondaryText)
+        Spacer(modifier = Modifier.height(12.dp))
+        CategoryGrid(selectedCategory = selectedCategory, onSelectCategory = onSelectCategory, limit = 9)
+        Spacer(modifier = Modifier.height(20.dp))
+        FilledButton("추가하기", onConfirm)
+    }
+}
+
+@Composable
+private fun CategoryEditSheet(
+    selectedCategory: String,
+    transaction: EditableTransaction,
+    onSelectCategory: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    BottomSheetShell(title = "카테고리 변경", onDismiss = onDismiss) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            color = Color(0xFFF4F6F8),
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 18.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(transaction.title, style = AppTypography.body)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(transaction.time, style = AppTypography.small, color = SecondaryText)
+                }
+                Text(transaction.amountLabel, style = AppTypography.body)
+            }
         }
+        Spacer(modifier = Modifier.height(24.dp))
+        Text("카테고리를 선택하세요", style = AppTypography.small, color = SecondaryText)
+        Spacer(modifier = Modifier.height(12.dp))
+        CategoryGrid(selectedCategory = selectedCategory, onSelectCategory = onSelectCategory, limit = 12)
+        Spacer(modifier = Modifier.height(20.dp))
+        FilledButton("카테고리를 선택하세요", onConfirm, enabled = false)
+    }
+}
 
-        Spacer(modifier = Modifier.height(16.dp))
+@Composable
+private fun RecurringAddSheet(
+    selectedCategory: String,
+    onSelectCategory: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
+) {
+    BottomSheetShell(title = "정기결제 추가", onDismiss = onDismiss) {
+        LabeledTextField("결제명", "예: 넷플릭스")
+        Spacer(modifier = Modifier.height(24.dp))
+        LabeledAmountField("결제 금액", "0", "원")
+        Spacer(modifier = Modifier.height(24.dp))
+        LabeledCalendarField("매월 결제일", "15일")
+        Spacer(modifier = Modifier.height(24.dp))
+        Text("카테고리", style = AppTypography.small, color = SecondaryText)
+        Spacer(modifier = Modifier.height(12.dp))
+        CategoryGrid(selectedCategory = selectedCategory, onSelectCategory = onSelectCategory, limit = 9)
+        Spacer(modifier = Modifier.height(20.dp))
+        FilledButton("추가하기", onConfirm)
+    }
+}
 
-        RoundedPanel {
-            Text(text = "최근 결제", style = HomeTextStyle.sectionTitle)
-            Spacer(modifier = Modifier.height(12.dp))
-            listOf("2026.04.03", "2026.03.03", "2026.02.03").forEachIndexed { index, date ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(text = date, style = HomeTextStyle.supportText, color = SecondaryText)
-                    Text(text = "17,000원", style = HomeTextStyle.valueText)
-                }
-                if (index != 2) {
-                    HorizontalDivider(
-                        modifier = Modifier.padding(vertical = 12.dp),
-                        color = Color(0xFFF1F5F9),
-                    )
-                }
+@Composable
+private fun BottomSheetShell(
+    title: String,
+    onDismiss: () -> Unit,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.7f))
+            .clickable(onClick = onDismiss),
+    ) {
+        Surface(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth(),
+            color = Color.White,
+            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(horizontal = 24.dp, vertical = 12.dp)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .width(40.dp)
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(999.dp))
+                        .background(Color(0xFF9CA3AF)),
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(title, style = AppTypography.title, color = Color.Black)
+                Spacer(modifier = Modifier.height(24.dp))
+                content()
             }
         }
     }
 }
 
 @Composable
-private fun AlertsOverviewPage(
-    onAlertDetail: () -> Unit,
-    onSettings: () -> Unit,
+private fun HomeTopBar() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .padding(horizontal = 4.dp, vertical = 14.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(modifier = Modifier.size(32.dp).clip(CircleShape).background(Color(0xFFD1D5DB)))
+        Box {
+            Text("🔔", fontSize = 22.sp, color = SecondaryText)
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(6.dp)
+                    .clip(CircleShape)
+                    .background(Color.Red),
+            )
+        }
+    }
+}
+
+@Composable
+private fun HomeSummaryCard(
+    title: String,
+    amount: String,
+    buttonLabel: String,
+    onClick: () -> Unit,
 ) {
-    ScreenColumn {
-        PageHeader(title = "알림", trailingLabel = "설정", onTrailingClick = onSettings)
-        Spacer(modifier = Modifier.height(16.dp))
-        RoundedPanel {
-            ChipRow(labels = listOf("전체", "예산", "정기결제", "리포트"), selected = "전체")
-            Spacer(modifier = Modifier.height(20.dp))
-            alerts.forEachIndexed { index, item ->
-                AlertCard(item = item, onClick = onAlertDetail)
-                if (index != alerts.lastIndex) {
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
+    LargeCard(horizontalAlignment = Alignment.Start) {
+        Text(title, style = AppTypography.small, color = SecondaryText)
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(amount, style = AppTypography.amount, color = Color.Black)
+        Spacer(modifier = Modifier.height(28.dp))
+        FilledButton(buttonLabel, onClick)
+    }
+}
+
+@Composable
+private fun HomeRecentCard(
+    transactions: List<EditableTransaction>,
+    onDeleteRecent: () -> Unit,
+    onShowMore: () -> Unit,
+    onEditTransactionCategory: () -> Unit,
+    showMoreLabel: Boolean,
+) {
+    MediumCard {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text("최근 내역", style = AppTypography.cardTitle)
+            Text(
+                text = if (showMoreLabel) "더보기" else "🗑",
+                modifier = Modifier.clickable(onClick = if (showMoreLabel) onShowMore else onDeleteRecent),
+                style = AppTypography.small,
+                color = SecondaryText,
+            )
+        }
+        Spacer(modifier = Modifier.height(18.dp))
+        transactions.take(5).forEachIndexed { index, item ->
+            TransactionRow(item = item, onClick = onEditTransactionCategory)
+            if (index != minOf(4, transactions.lastIndex)) Spacer(modifier = Modifier.height(14.dp))
+        }
+    }
+}
+
+@Composable
+private fun HomeActionCard(
+    modifier: Modifier,
+    icon: String,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+) {
+    Surface(
+        modifier = modifier.clickable(onClick = onClick),
+        color = Color.White,
+        shape = RoundedCornerShape(24.dp),
+        shadowElevation = 3.dp,
+    ) {
+        Column(modifier = Modifier.padding(20.dp)) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFFE5F0FF)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(icon, fontSize = 22.sp)
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(title, style = AppTypography.body)
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(subtitle, style = AppTypography.small, color = SecondaryText)
         }
     }
 }
 
 @Composable
-private fun AlertDetailPage(onBack: () -> Unit) {
-    ScreenColumn {
-        PageHeader(title = "알림 상세", onBack = onBack)
-        Spacer(modifier = Modifier.height(16.dp))
-        RoundedPanel {
-            Text(text = "예산 초과 알림", style = HomeTextStyle.sectionTitle)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "식비 예산의 92%를 사용했어요. 남은 기간 동안 하루 평균 8,000원 이하로 관리하면 이번 달 목표를 지킬 수 있어요.",
-                style = HomeTextStyle.supportText,
-                color = SecondaryText,
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            StatProgressRow(item = StatBar("식비 사용률", 0.92f, Color(0xFFE34D4D)))
-            Spacer(modifier = Modifier.height(20.dp))
-            HighlightCard(
-                title = "추천 액션",
-                body = "오늘 저녁은 집에 있는 식재료로 해결해 보세요.",
-                accent = Color(0xFFFFF8E6),
-                contentColor = Color.Black,
-            )
-        }
-    }
-}
-
-@Composable
-private fun AlertSettingsPage(
-    userId: String?,
-    onBack: () -> Unit,
-    onLogoutClick: () -> Unit,
+private fun ScreenColumn(
+    content: @Composable ColumnScope.() -> Unit,
 ) {
-    var budgetAlerts by remember { mutableStateOf(true) }
-    var recurringAlerts by remember { mutableStateOf(true) }
-    var monthlyReportAlerts by remember { mutableStateOf(false) }
-
-    ScreenColumn {
-        PageHeader(title = "알림 설정", onBack = onBack)
-        Spacer(modifier = Modifier.height(16.dp))
-        RoundedPanel {
-            Text(text = "계정", style = HomeTextStyle.sectionTitle)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = userId ?: "demo_user",
-                style = HomeTextStyle.supportText,
-                color = SecondaryText,
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            ToggleRow(
-                title = "예산 초과 알림",
-                subtitle = "월별 예산의 80%, 100% 구간에서 알림을 보내요.",
-                checked = budgetAlerts,
-                onCheckedChange = { budgetAlerts = it },
-            )
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = Color(0xFFF1F5F9))
-            ToggleRow(
-                title = "정기결제 알림",
-                subtitle = "정기결제 하루 전에 알려드려요.",
-                checked = recurringAlerts,
-                onCheckedChange = { recurringAlerts = it },
-            )
-            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), color = Color(0xFFF1F5F9))
-            ToggleRow(
-                title = "월별 리포트 알림",
-                subtitle = "매달 1일 오전에 지난달 리포트를 받아요.",
-                checked = monthlyReportAlerts,
-                onCheckedChange = { monthlyReportAlerts = it },
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            PrimaryButton(
-                text = "로그아웃",
-                containerColor = Color.White,
-                contentColor = Color.Black,
-                borderColor = Color(0xFFE2E8F0),
-                onClick = onLogoutClick,
-            )
-        }
-    }
-}
-
-@Composable
-private fun ScreenColumn(content: @Composable ColumnScope.() -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp)
-            .padding(top = 12.dp, bottom = 24.dp),
+            .padding(bottom = 24.dp),
         content = content,
     )
 }
 
 @Composable
-private fun PageHeader(
+private fun ScreenHeader(
     title: String,
     onBack: (() -> Unit)? = null,
-    trailingLabel: String? = null,
-    onTrailingClick: (() -> Unit)? = null,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(104.dp)
+            .background(Color.White),
+    ) {
+        if (onBack != null) {
+            Text(
+                "←",
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(start = 12.dp, bottom = 18.dp)
+                    .clickable(onClick = onBack),
+                style = AppTypography.title,
+            )
+        }
+        Text(
+            text = title,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 18.dp),
+            style = AppTypography.title,
+        )
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+}
+
+@Composable
+private fun AlertsTopBar() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(104.dp)
+            .background(Color.White),
+    ) {
+        Text(
+            "알림",
+            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 18.dp),
+            style = AppTypography.title,
+        )
+        Text(
+            "모두 읽음",
+            modifier = Modifier.align(Alignment.BottomEnd).padding(end = 12.dp, bottom = 20.dp),
+            style = AppTypography.small,
+            color = SecondaryText,
+        )
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+}
+
+@Composable
+private fun SegmentedTabs(
+    selectedIndex: Int,
+    labels: List<String>,
+    onFirst: () -> Unit,
+    onSecond: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xFFD1D1D3))
+            .padding(4.dp),
+    ) {
+        labels.forEachIndexed { index, label ->
+            val selected = index == selectedIndex
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(if (selected) Color.White else Color.Transparent)
+                    .clickable(onClick = if (index == 0) onFirst else onSecond)
+                    .padding(vertical = 12.dp),
+            ) {
+                Text(
+                    text = label,
+                    modifier = Modifier.align(Alignment.Center),
+                    style = AppTypography.small,
+                    color = if (selected) Color.Black else SecondaryText,
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
+    }
+    Spacer(modifier = Modifier.height(18.dp))
+}
+
+@Composable
+private fun SegmentedControl(
+    selected: String,
+    labels: List<String>,
+    onSelect: (String) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xFFE5E7EB))
+            .padding(4.dp),
+    ) {
+        labels.forEach { label ->
+            val selectedItem = selected == label
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(if (selectedItem) Color.White else Color.Transparent)
+                    .clickable { onSelect(label) }
+                    .padding(vertical = 10.dp),
+            ) {
+                Text(
+                    label,
+                    modifier = Modifier.align(Alignment.Center),
+                    style = AppTypography.body,
+                    color = if (selectedItem) Color.Black else SecondaryText,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LargeCard(
+    horizontalAlignment: Alignment.Horizontal = Alignment.CenterHorizontally,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.White,
+        shadowElevation = 4.dp,
+        shape = RoundedCornerShape(28.dp),
+    ) {
+        Column(
+            modifier = Modifier.padding(24.dp),
+            horizontalAlignment = horizontalAlignment,
+            content = content,
+        )
+    }
+}
+
+@Composable
+private fun MediumCard(
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.White,
+        shadowElevation = 3.dp,
+        shape = RoundedCornerShape(24.dp),
+    ) {
+        Column(modifier = Modifier.padding(24.dp), content = content)
+    }
+}
+
+@Composable
+private fun MonthSwitcher(
+    yearMonth: java.time.YearMonth,
+    onPreviousMonth: () -> Unit,
+    onNextMonth: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            if (onBack != null) {
-                Text(
-                    text = "←",
-                    modifier = Modifier
-                        .clickable(onClick = onBack)
-                        .padding(end = 12.dp),
-                    style = HomeTextStyle.sectionTitle,
-                )
-            }
-            Text(text = title, style = HomeTextStyle.sectionTitle)
-        }
-        if (trailingLabel != null && onTrailingClick != null) {
-            Text(
-                text = trailingLabel,
-                modifier = Modifier.clickable(onClick = onTrailingClick),
-                style = HomeTextStyle.supportText.copy(fontWeight = FontWeight.SemiBold),
-                color = BrandBlue,
+        Text("‹", modifier = Modifier.clickable(onClick = onPreviousMonth), style = AppTypography.title)
+        Spacer(modifier = Modifier.width(18.dp))
+        Text("${yearMonth.year}년 ${yearMonth.monthValue}월", style = AppTypography.cardTitle)
+        Spacer(modifier = Modifier.width(18.dp))
+        Text("›", modifier = Modifier.clickable(onClick = onNextMonth), style = AppTypography.title)
+    }
+}
+
+@Composable
+private fun CenteredCaption(text: String) {
+    Text(text, style = AppTypography.small, color = SecondaryText, textAlign = TextAlign.Center)
+}
+
+@Composable
+private fun CenteredHeadline(text: String, color: Color = Color.Black) {
+    Text(text, style = AppTypography.amount, color = color, textAlign = TextAlign.Center)
+}
+
+@Composable
+private fun AccentPill(text: String, background: Color, textColor: Color) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(background)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+    ) {
+        Text(text, style = AppTypography.tiny, color = textColor)
+    }
+}
+
+@Composable
+private fun BarCompare(
+    leftLabel: String,
+    rightLabel: String,
+    leftAmount: String,
+    rightAmount: String,
+    leftColor: Color,
+    rightColor: Color,
+    leftRatio: Float,
+    rightRatio: Float,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.Bottom,
+    ) {
+        CompareBar(leftLabel, leftAmount, leftColor, leftRatio)
+        CompareBar(rightLabel, rightAmount, rightColor, rightRatio)
+    }
+}
+
+@Composable
+private fun CompareBar(
+    label: String,
+    amount: String,
+    color: Color,
+    ratio: Float,
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(amount, style = AppTypography.tiny)
+        Spacer(modifier = Modifier.height(8.dp))
+        Box(
+            modifier = Modifier
+                .width(56.dp)
+                .height((100 * ratio.coerceIn(0.5f, 1f)).dp)
+                .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp))
+                .background(color),
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(label, style = AppTypography.tiny, color = SecondaryText)
+    }
+}
+
+@Composable
+private fun SegmentedProgressBar() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(16.dp)
+            .clip(RoundedCornerShape(999.dp))
+            .background(Color(0xFFD1D1D3)),
+    ) {
+        listOf(
+            Color(0xFF3182F6) to 3f,
+            Color(0xFFFFB11B) to 2f,
+            Color.Red to 1.8f,
+            Color(0xFF6BCB77) to 1f,
+            Color(0xFF8B95A1) to 0.8f,
+            Color(0xFFD1D1D3) to 0.6f,
+        ).forEach { (color, weight) ->
+            Box(
+                modifier = Modifier
+                    .weight(weight)
+                    .fillMaxSize()
+                    .background(color),
             )
         }
+    }
+}
+
+@Composable
+private fun CategorySummaryRow(item: CategoryExpenseItem) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(item.barColor))
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(item.categoryName, style = AppTypography.body)
+        Spacer(modifier = Modifier.weight(1f))
+        Text(item.amount.formatWonCompact(), style = AppTypography.body)
+        Spacer(modifier = Modifier.width(16.dp))
+        Text("${(item.ratio * 100).toInt()}%", style = AppTypography.small, color = SecondaryText)
+    }
+}
+
+@Composable
+private fun CategoryDetailRow(item: CategoryExpenseItem) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        CategoryIcon(icon = item.categoryEmoji())
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(item.categoryName, style = AppTypography.body)
+            Text("${(item.ratio * 100).toInt()}%", style = AppTypography.small, color = SecondaryText)
+        }
+        Column(horizontalAlignment = Alignment.End) {
+            Text(item.amount.formatWonCompact(), style = AppTypography.body)
+            Text(
+                if (item.spentMoreThanPreviousMonth) "지난달보다 많이 씀" else "지난달보다 적게 씀",
+                style = AppTypography.tiny,
+                color = if (item.spentMoreThanPreviousMonth) Color.Red else BrandBlue,
+            )
+        }
+    }
+}
+
+@Composable
+private fun IncomeExpenseRatioBar() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(16.dp)
+            .clip(RoundedCornerShape(999.dp))
+            .background(Color(0xFFF2F4F6)),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.52f)
+                .fillMaxSize()
+                .clip(RoundedCornerShape(999.dp))
+                .background(BrandBlue),
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 132.dp)
+                .fillMaxSize()
+                .clip(RoundedCornerShape(999.dp))
+                .background(Color.Red),
+        )
+    }
+}
+
+@Composable
+private fun LegendAmount(label: String, amount: String, color: Color) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(color))
+        Spacer(modifier = Modifier.width(10.dp))
+        Text(label, style = AppTypography.body, color = SecondaryText)
+        Spacer(modifier = Modifier.weight(1f))
+        Text(amount, style = AppTypography.body, color = color)
+    }
+}
+
+@Composable
+private fun TransactionRow(
+    item: EditableTransaction,
+    onClick: (() -> Unit)? = null,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        CategoryIcon(item.icon)
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(item.title, style = AppTypography.body)
+            Text("${item.time} · ${item.category}", style = AppTypography.small, color = SecondaryText)
+        }
+        Text(
+            item.amountLabel,
+            style = AppTypography.body,
+            color = if (item.positive) BrandBlue else Color.Black,
+        )
+    }
+}
+
+@Composable
+private fun RecurringRow(
+    title: String,
+    subtitle: String,
+    amount: String,
+    enabled: Boolean,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        CategoryIcon(if (title.contains("통신") || title.contains("관리비")) "🛁" else "🎮")
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, style = AppTypography.body)
+            Text(subtitle, style = AppTypography.small, color = SecondaryText)
+        }
+        Text(amount, style = AppTypography.body, color = if (enabled) Color.Black else SecondaryText)
+        Spacer(modifier = Modifier.width(12.dp))
+        Switch(
+            checked = enabled,
+            onCheckedChange = {},
+            colors = SwitchDefaults.colors(
+                checkedTrackColor = BrandBlue,
+                uncheckedTrackColor = Color(0xFFD1D1D3),
+                checkedThumbColor = Color.White,
+                uncheckedThumbColor = Color.White,
+            ),
+        )
+    }
+}
+
+@Composable
+private fun AlertListItem(
+    circleColor: Color,
+    title: String,
+    body: String,
+    time: String,
+    unread: Boolean,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp),
+    ) {
+        Box(modifier = Modifier.size(40.dp).clip(CircleShape).background(circleColor))
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(title, style = AppTypography.body)
+                if (unread) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(BrandBlue))
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(body, style = AppTypography.small, color = Color(0xFF4E5968))
+            Spacer(modifier = Modifier.height(10.dp))
+            Text(time, style = AppTypography.tiny, color = SecondaryText)
+        }
+    }
+}
+
+@Composable
+private fun SuggestionAlert(
+    accepted: Boolean,
+    onAccept: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp),
+    ) {
+        Row {
+            Box(modifier = Modifier.size(40.dp).clip(CircleShape).background(Color(0xFFFEE500)))
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Text("정기결제가 의심돼요!", style = AppTypography.body)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text("스포티파이 9,900원이 매월 결제되고 있어요.", style = AppTypography.small, color = Color(0xFF4E5968))
+                Text("정기결제로 등록하시겠습니까?", style = AppTypography.small, color = Color(0xFF4E5968))
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    SmallGhostButton("아니오")
+                    SmallFilledButton(if (accepted) "완료" else "예", onAccept)
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+                Text("어제", style = AppTypography.tiny, color = SecondaryText)
+            }
+        }
+    }
+}
+
+@Composable
+private fun LabeledTextField(label: String, placeholder: String) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(label, style = AppTypography.small, color = SecondaryText)
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(placeholder, style = AppTypography.input, color = SecondaryText)
+        Spacer(modifier = Modifier.height(12.dp))
+        DividerLine()
+    }
+}
+
+@Composable
+private fun LabeledAmountField(label: String, value: String, suffix: String) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(label, style = AppTypography.small, color = SecondaryText)
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(value, style = AppTypography.amountLarge, color = SecondaryText)
+            Spacer(modifier = Modifier.weight(1f))
+            Text(suffix, style = AppTypography.title, color = SecondaryText)
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        DividerLine()
+    }
+}
+
+@Composable
+private fun LabeledCalendarField(label: String, value: String) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(label, style = AppTypography.small, color = SecondaryText)
+        Spacer(modifier = Modifier.height(12.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(value, style = AppTypography.input, color = Color.Black)
+            Spacer(modifier = Modifier.weight(1f))
+            Text("🗓", fontSize = 18.sp)
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        DividerLine()
+    }
+}
+
+@Composable
+private fun CategoryGrid(
+    selectedCategory: String,
+    onSelectCategory: (String) -> Unit,
+    limit: Int,
+) {
+    categoryChoices.take(limit).chunked(3).forEach { row ->
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            row.forEach { choice ->
+                CategoryGridItem(
+                    modifier = Modifier.weight(1f),
+                    choice = choice,
+                    selected = choice.code == selectedCategory,
+                    onClick = { onSelectCategory(choice.code) },
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+    }
+}
+
+@Composable
+private fun CategoryGridItem(
+    modifier: Modifier,
+    choice: CategoryChoice,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Surface(
+        modifier = modifier.clickable(onClick = onClick),
+        color = if (selected) BrandBlue else Color(0xFFF4F6F8),
+        shadowElevation = if (selected) 6.dp else 0.dp,
+        shape = RoundedCornerShape(16.dp),
+    ) {
+        Column(
+            modifier = Modifier.padding(vertical = 18.dp, horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(choice.icon, fontSize = 22.sp)
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                choice.label,
+                style = AppTypography.tiny,
+                color = if (selected) Color.White else Color.Black,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
+@Composable
+private fun FilledButton(
+    text: String,
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+) {
+    Button(
+        onClick = onClick,
+        enabled = enabled,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(54.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = BrandBlue,
+            contentColor = Color.White,
+            disabledContainerColor = Color(0xFFD1D5DB),
+            disabledContentColor = SecondaryText,
+        ),
+    ) {
+        Text(text, style = AppTypography.button)
+    }
+}
+
+@Composable
+private fun DialogActionButton(
+    label: String,
+    background: Color,
+    content: Color,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .width(102.dp)
+            .height(40.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(background)
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(label, style = AppTypography.small, color = content)
+    }
+}
+
+@Composable
+private fun SmallGhostButton(text: String) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color(0xFFF4F6F8))
+            .padding(horizontal = 30.dp, vertical = 8.dp),
+    ) {
+        Text(text, style = AppTypography.tiny)
+    }
+}
+
+@Composable
+private fun SmallFilledButton(text: String, onClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(BrandBlue)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 34.dp, vertical = 8.dp),
+    ) {
+        Text(text, style = AppTypography.tiny, color = Color.White)
+    }
+}
+
+@Composable
+private fun DividerLine() {
+    HorizontalDivider(color = Color.Black, thickness = 1.dp)
+}
+
+@Composable
+private fun CategoryIcon(icon: String) {
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .background(Color(0xFFF4F6F8)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(icon, fontSize = 18.sp)
     }
 }
 
@@ -851,7 +1575,7 @@ private fun MainBottomBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .windowInsetsPadding(WindowInsets.navigationBars)
+                .navigationBarsPadding()
                 .padding(horizontal = 12.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically,
@@ -866,457 +1590,97 @@ private fun MainBottomBar(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    Text(
-                        text = tab.icon,
-                        fontSize = 19.sp,
-                        color = if (selected) Color.Black else Color(0xFF9CA3AF),
-                    )
-                    Text(
-                        text = tab.label,
-                        style = HomeTextStyle.tinyLabel,
-                        color = if (selected) Color.Black else Color(0xFF9CA3AF),
-                    )
+                    Text(tab.icon, fontSize = 20.sp, color = if (selected) Color.Black else Color(0xFFB0B8C1))
+                    Text(tab.label, style = AppTypography.tiny, color = if (selected) Color.Black else Color(0xFFB0B8C1))
                 }
             }
         }
     }
 }
 
-@Composable
-private fun RoundedPanel(
-    modifier: Modifier = Modifier,
-    padding: Dp = 24.dp,
-    content: @Composable ColumnScope.() -> Unit,
-) {
-    Surface(
-        modifier = modifier.fillMaxWidth(),
-        color = Color.White,
-        shadowElevation = 6.dp,
-        shape = RoundedCornerShape(24.dp),
-    ) {
-        Column(
-            modifier = Modifier.padding(padding),
-            content = content,
-        )
-    }
-}
-
-@Composable
-private fun PrimaryButton(
-    text: String,
-    containerColor: Color,
-    contentColor: Color,
-    onClick: () -> Unit,
-    borderColor: Color = Color.Transparent,
-) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor,
-        ),
-        border = androidx.compose.foundation.BorderStroke(1.dp, borderColor),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
-        contentPadding = PaddingValues(horizontal = 20.dp),
-    ) {
-        Text(
-            text = text,
-            style = HomeTextStyle.buttonLabel,
-        )
-    }
-}
-
-@Composable
-private fun TransactionRow(item: TransactionItem) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(BackgroundGray),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(text = item.icon, fontSize = 18.sp)
-            }
-            Column {
-                Text(text = item.merchant, style = HomeTextStyle.valueText)
-                Text(
-                    text = "${item.time} · ${item.category}",
-                    style = HomeTextStyle.supportText,
-                    color = SecondaryText,
-                )
-            }
-        }
-        Text(
-            text = item.amount,
-            style = HomeTextStyle.valueText,
-            color = if (item.positive) BrandBlue else Color.Black,
-        )
-    }
-}
-
-@Composable
-private fun InsightCard(
-    modifier: Modifier = Modifier,
-    icon: String,
-    title: String,
-    body: String,
-    onClick: () -> Unit,
-) {
-    Surface(
-        modifier = modifier.clickable(onClick = onClick),
-        color = Color.White,
-        shadowElevation = 6.dp,
-        shape = RoundedCornerShape(20.dp),
-    ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(Color.White),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(text = icon, fontSize = 20.sp)
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(text = title, style = HomeTextStyle.valueText)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = body, style = HomeTextStyle.supportText, color = SecondaryText)
-        }
-    }
-}
-
-@Composable
-private fun ChipRow(
-    labels: List<String>,
-    selected: String,
-) {
-    Row(
-        modifier = Modifier.horizontalScroll(rememberScrollState()),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        labels.forEach { label ->
-            val isSelected = label == selected
-            Surface(
-                color = if (isSelected) BrandBlue.copy(alpha = 0.12f) else Color(0xFFF4F6F8),
-                shape = RoundedCornerShape(999.dp),
-            ) {
-                Text(
-                    text = label,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                    style = HomeTextStyle.supportText.copy(fontWeight = FontWeight.SemiBold),
-                    color = if (isSelected) BrandBlue else SecondaryText,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun SummaryStrip(
-    leftTitle: String,
-    leftValue: String,
-    rightTitle: String,
-    rightValue: String,
-) {
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        HighlightCard(
-            modifier = Modifier.weight(1f),
-            title = leftTitle,
-            body = leftValue,
-            accent = Color(0xFFF8FAFF),
-        )
-        HighlightCard(
-            modifier = Modifier.weight(1f),
-            title = rightTitle,
-            body = rightValue,
-            accent = Color(0xFFF8FAFF),
-        )
-    }
-}
-
-@Composable
-private fun HighlightCard(
-    modifier: Modifier = Modifier,
-    title: String,
-    body: String,
-    accent: Color,
-    contentColor: Color = Color.Black,
-) {
-    Surface(
-        modifier = modifier,
-        color = accent,
-        shape = RoundedCornerShape(18.dp),
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = title, style = HomeTextStyle.smallLabel, color = SecondaryText)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = body,
-                style = HomeTextStyle.valueText.copy(fontWeight = FontWeight.Bold),
-                color = contentColor,
-            )
-        }
-    }
-}
-
-@Composable
-private fun StatProgressRow(item: StatBar) {
-    Column {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(text = item.label, style = HomeTextStyle.supportText, color = Color.Black)
-            Text(
-                text = "${(item.value * 100).toInt()}%",
-                style = HomeTextStyle.supportText.copy(fontWeight = FontWeight.SemiBold),
-                color = SecondaryText,
-            )
-        }
-        Spacer(modifier = Modifier.height(6.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(8.dp)
-                .clip(RoundedCornerShape(999.dp))
-                .background(Color(0xFFF1F5F9)),
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(item.value)
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(999.dp))
-                    .background(item.color),
-            )
-        }
-    }
-}
-
-@Composable
-private fun ChartColumn(
-    label: String,
-    value: String,
-    barHeight: Dp,
-    color: Color,
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = value, style = HomeTextStyle.tinyLabel, color = SecondaryText)
-        Spacer(modifier = Modifier.height(8.dp))
-        Box(
-            modifier = Modifier
-                .width(52.dp)
-                .height(barHeight)
-                .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
-                .background(color),
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = label, style = HomeTextStyle.supportText, color = SecondaryText)
-    }
-}
-
-@Composable
-private fun LabeledValue(label: String, value: String) {
-    Column {
-        Text(text = label, style = HomeTextStyle.smallLabel, color = SecondaryText)
-        Spacer(modifier = Modifier.height(6.dp))
-        Surface(
-            color = Color(0xFFF8FAFC),
-            shape = RoundedCornerShape(14.dp),
-        ) {
-            Text(
-                text = value,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 14.dp),
-                style = HomeTextStyle.valueText,
-            )
-        }
-    }
-}
-
-@Composable
-private fun RecurringCard(
-    modifier: Modifier = Modifier,
-    item: RecurringPayment,
-    onClick: () -> Unit,
-) {
-    Surface(
-        modifier = modifier.clickable(onClick = onClick),
-        color = Color(0xFFF8FAFF),
-        shape = RoundedCornerShape(18.dp),
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = item.icon, fontSize = 22.sp)
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(text = item.name, style = HomeTextStyle.valueText)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = item.amount, style = HomeTextStyle.supportText, color = SecondaryText)
-        }
-    }
-}
-
-@Composable
-private fun RecurringRow(item: RecurringPayment) {
-    var enabled by remember(item.name) { mutableStateOf(item.enabled) }
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(BackgroundGray),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(text = item.icon, fontSize = 18.sp)
-            }
-            Column {
-                Text(text = item.name, style = HomeTextStyle.valueText)
-                Text(text = "${item.cycle} · ${item.amount}", style = HomeTextStyle.supportText, color = SecondaryText)
-            }
-        }
-        Switch(
-            checked = enabled,
-            onCheckedChange = { enabled = it },
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = Color.White,
-                checkedTrackColor = BrandBlue,
-            ),
-        )
-    }
-}
-
-@Composable
-private fun AlertCard(
-    item: AlertItem,
-    onClick: () -> Unit,
-) {
-    Surface(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        color = Color(0xFFF8FAFF),
-        shape = RoundedCornerShape(18.dp),
-    ) {
-        Column(modifier = Modifier.padding(18.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Surface(
-                    color = BrandBlue.copy(alpha = 0.12f),
-                    shape = RoundedCornerShape(999.dp),
-                ) {
-                    Text(
-                        text = item.badge,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                        style = HomeTextStyle.tinyLabel.copy(fontWeight = FontWeight.SemiBold),
-                        color = BrandBlue,
-                    )
-                }
-                Text(text = item.time, style = HomeTextStyle.tinyLabel, color = SecondaryText)
-            }
-            Spacer(modifier = Modifier.height(10.dp))
-            Text(text = item.title, style = HomeTextStyle.valueText)
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(text = item.body, style = HomeTextStyle.supportText, color = SecondaryText)
-        }
-    }
-}
-
-@Composable
-private fun ToggleRow(
-    title: String,
-    subtitle: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, style = HomeTextStyle.valueText)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(text = subtitle, style = HomeTextStyle.supportText, color = SecondaryText)
-        }
-        Spacer(modifier = Modifier.width(12.dp))
-        Switch(
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = Color.White,
-                checkedTrackColor = BrandBlue,
-            ),
-        )
-    }
-}
-
-private object HomeTextStyle {
-    val heroValue
-        @Composable get() = androidx.compose.material3.MaterialTheme.typography.headlineMedium.copy(
-            fontSize = 24.sp,
-            lineHeight = 32.sp,
-            fontWeight = FontWeight.Bold,
-        )
-    val sectionTitle
+private object AppTypography {
+    val title
         @Composable get() = androidx.compose.material3.MaterialTheme.typography.titleLarge.copy(
-            fontSize = 20.sp,
+            fontSize = 22.sp,
             lineHeight = 28.sp,
             fontWeight = FontWeight.Bold,
         )
-    val valueText
-        @Composable get() = androidx.compose.material3.MaterialTheme.typography.bodyLarge.copy(
+    val heroTitle
+        @Composable get() = androidx.compose.material3.MaterialTheme.typography.headlineMedium.copy(
+            fontSize = 19.sp,
+            lineHeight = 33.sp,
+            fontWeight = FontWeight.Bold,
+        )
+    val amount
+        @Composable get() = androidx.compose.material3.MaterialTheme.typography.headlineMedium.copy(
+            fontSize = 26.sp,
+            lineHeight = 36.sp,
+            fontWeight = FontWeight.Bold,
+        )
+    val amountLarge
+        @Composable get() = androidx.compose.material3.MaterialTheme.typography.headlineMedium.copy(
+            fontSize = 30.sp,
+            lineHeight = 36.sp,
+            fontWeight = FontWeight.Bold,
+        )
+    val cardTitle
+        @Composable get() = androidx.compose.material3.MaterialTheme.typography.titleMedium.copy(
             fontSize = 15.sp,
-            lineHeight = 22.sp,
+            lineHeight = 27.sp,
+            fontWeight = FontWeight.Bold,
+        )
+    val body
+        @Composable get() = androidx.compose.material3.MaterialTheme.typography.bodyLarge.copy(
+            fontSize = 14.sp,
+            lineHeight = 24.sp,
             fontWeight = FontWeight.SemiBold,
         )
-    val supportText
-        @Composable get() = androidx.compose.material3.MaterialTheme.typography.bodyMedium.copy(
-            fontSize = 13.sp,
+    val input
+        @Composable get() = androidx.compose.material3.MaterialTheme.typography.bodyLarge.copy(
+            fontSize = 18.sp,
+            lineHeight = 28.sp,
+            fontWeight = FontWeight.Normal,
+        )
+    val small
+        @Composable get() = androidx.compose.material3.MaterialTheme.typography.bodySmall.copy(
+            fontSize = 12.sp,
             lineHeight = 20.sp,
             fontWeight = FontWeight.Medium,
         )
-    val smallLabel
-        @Composable get() = androidx.compose.material3.MaterialTheme.typography.bodySmall.copy(
-            fontSize = 12.sp,
-            lineHeight = 18.sp,
-            fontWeight = FontWeight.Medium,
-        )
-    val tinyLabel
+    val tiny
         @Composable get() = androidx.compose.material3.MaterialTheme.typography.bodySmall.copy(
             fontSize = 10.sp,
-            lineHeight = 14.sp,
-            fontWeight = FontWeight.Medium,
-        )
-    val buttonLabel
-        @Composable get() = androidx.compose.material3.MaterialTheme.typography.labelLarge.copy(
-            fontSize = 14.sp,
-            lineHeight = 22.sp,
+            lineHeight = 18.sp,
             fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center,
         )
+    val button
+        @Composable get() = androidx.compose.material3.MaterialTheme.typography.labelLarge.copy(
+            fontSize = 15.sp,
+            lineHeight = 24.sp,
+            fontWeight = FontWeight.SemiBold,
+        )
+}
+
+private fun Long.formatWonCompact(): String = "%,d원".format(this)
+
+private fun Long?.formatWonOrEmpty(): String = this?.let { "%,d원".format(it) } ?: "데이터 없음"
+
+private fun barRatio(amount: Long?, otherAmount: Long?): Float {
+    val safeAmount = amount ?: 0L
+    val maxAmount = maxOf(safeAmount, otherAmount ?: 0L)
+    return when {
+        maxAmount <= 0L -> 0.55f
+        else -> (safeAmount.toFloat() / maxAmount.toFloat()).coerceIn(0.55f, 1f)
+    }
+}
+
+private fun CategoryExpenseItem.categoryEmoji(): String = when (category) {
+    "FOOD" -> "🍔"
+    "SALARY" -> "💰"
+    "TRANSPORT_CAR" -> "🚌"
+    "TRAVEL_STAY" -> "✈"
+    "HOBBY_LEISURE" -> "🎮"
+    else -> "•"
 }
 
 @Preview(showBackground = true, showSystemUi = true)

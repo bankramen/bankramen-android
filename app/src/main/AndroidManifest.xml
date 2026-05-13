@@ -37,6 +37,14 @@
                     android:pathPrefix="${kakaoRedirectPath}"
                     android:scheme="${kakaoRedirectScheme}" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="kakaob6a16a73eee3bf2c82f62b9039514cfe" />
+            </intent-filter>
         </activity>
 
         <service
@@ -52,6 +60,17 @@
                 android:name="android.service.notification.default_filter_types"
                 android:value="alerting|conversations" />
         </service>
+        <service
+            android:name=".service.BankramenFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="bankramen_push" />
     </application>
 
 </manifest>

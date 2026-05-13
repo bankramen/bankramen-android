@@ -12,7 +12,9 @@ class AuthRepository(
         loginGateway.loginWithKakao(request)
             .onSuccess(sessionManager::saveSession)
 
-    fun startKakaoLogin(context: Context): Result<Unit> = kakaoLoginLauncher.launch(context)
+    suspend fun startKakaoLogin(context: Context): Result<Unit> = kakaoLoginLauncher.launch(context)
+
+    suspend fun logout(): Result<Unit> = sessionManager.logout()
 
     suspend fun completePendingKakaoLogin(): Result<AuthSession>? = when (val result = kakaoLoginStateStore.consumeResult()) {
         null -> null

@@ -3,6 +3,7 @@ package com.uson.myapplication.core.auth
 class AuthSessionManager(
     private val sessionStore: AuthSessionStore,
     private val reissueGateway: AuthReissueGateway,
+    private val logoutGateway: AuthLogoutGateway,
 ) {
     suspend fun bootstrap(nowMillis: Long = System.currentTimeMillis()): AuthBootstrapResult {
         val session = sessionStore.getSession() ?: return AuthBootstrapResult.LoggedOut
@@ -33,6 +34,19 @@ class AuthSessionManager(
 
     fun saveSession(session: AuthSession) {
         sessionStore.saveSession(session)
+    }
+
+    suspend fun logout(): Result<Unit> {
+        val refreshToken = sessionStore.getSession()?.refreshToken.orEmpty()
+
+        val result = if (refreshToken.isBlank()) {
+            Result.success(Unit)
+        } else {
+            logoutGateway.logout(refreshToken)
+        }
+
+        sessionStore.clearSession()
+        return result
     }
 
     fun clearSession() {

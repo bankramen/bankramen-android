@@ -19,6 +19,8 @@ gson = "2.13.1"
 openapiGenerator = "7.19.0"
 room = "2.7.2"
 kakaoSdk = "2.23.2"
+firebaseBom = "33.15.0"
+googleServices = "4.4.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,6 +52,8 @@ androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = 
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 kakao-user = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakaoSdk" }
 kakao-auth = { group = "com.kakao.sdk", name = "v2-auth", version.ref = "kakaoSdk" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging-ktx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -57,3 +61,4 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 openapi-generator = { id = "org.openapi.generator", version.ref = "openapiGenerator" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }

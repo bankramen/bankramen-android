@@ -1,58 +1,77 @@
 package com.uson.myapplication.core.api
 
-import com.uson.myapplication.BuildConfig
+import android.content.Context
 import com.uson.myapplication.core.auth.AuthGraph
 import com.uson.myapplication.core.auth.AuthHeaderInterceptor
 import com.uson.myapplication.core.auth.AuthTokenAuthenticator
-import com.uson.myapplication.generated.api.AuthApi
-import com.uson.myapplication.generated.api.SystemApi
-import com.uson.myapplication.generated.infrastructure.ApiClient
-import okhttp3.OkHttpClient
+import com.uson.myapplication.generated.api.APIApi
+import com.uson.myapplication.generated.api.CategoryApi
+import com.uson.myapplication.generated.api.MonthlyReportApi
+import com.uson.myapplication.generated.api.TransactionApi
+import okhttp3.Authenticator
+import okhttp3.Interceptor
 
 object BankramenApiFactory {
     @Volatile
-    private var appContextProvider: (() -> android.content.Context)? = null
+    private var appContextProvider: (() -> Context)? = null
 
-    fun initialize(context: android.content.Context) {
+    fun initialize(context: Context) {
         appContextProvider = { context.applicationContext }
     }
 
-    fun createSystemApi(): SystemApi = createApiClient(includeSessionAuth = true)
-        .createService(SystemApi::class.java)
+    fun createApiApi(includeSessionAuth: Boolean = true): APIApi = createService(
+        serviceClass = APIApi::class.java,
+        includeSessionAuth = includeSessionAuth,
+    )
 
-    fun createAuthApi(): AuthApi = createApiClient(includeSessionAuth = false)
-        .createService(AuthApi::class.java)
+    fun createTransactionApi(): TransactionApi = createService(
+        serviceClass = TransactionApi::class.java,
+        includeSessionAuth = true,
+    )
 
-    private fun createApiClient(includeSessionAuth: Boolean): ApiClient {
+    fun createMonthlyReportApi(): MonthlyReportApi = createService(
+        serviceClass = MonthlyReportApi::class.java,
+        includeSessionAuth = true,
+    )
+
+    fun createCategoryApi(): CategoryApi = createService(
+        serviceClass = CategoryApi::class.java,
+        includeSessionAuth = true,
+    )
+
+    private fun <T> createService(
+        serviceClass: Class<T>,
+        includeSessionAuth: Boolean,
+    ): T {
         val context = appContextProvider?.invoke()
-        val okHttpClientBuilder = if (includeSessionAuth && context != null) {
-            OkHttpClient.Builder()
-                .addInterceptor(AuthHeaderInterceptor(AuthGraph.sessionStore(context)))
-                .authenticator(AuthTokenAuthenticator(AuthGraph.sessionManager(context)))
-        } else {
-            OkHttpClient.Builder()
-        }
-
-        val client = ApiClient(
-            baseUrl = BuildConfig.API_BASE_URL,
-            okHttpClientBuilder = okHttpClientBuilder,
+        val sessionInterceptors = sessionInterceptors(
+            context = context,
+            includeSessionAuth = includeSessionAuth,
         )
-            .setLogger { }
+        val authenticator = sessionAuthenticator(
+            context = context,
+            includeSessionAuth = includeSessionAuth,
+        )
 
-        if (includeSessionAuth && BuildConfig.API_AUTH_TOKEN.isNotBlank() && context == null) {
-            val staticAuthorizationClient = ApiClient(baseUrl = BuildConfig.API_BASE_URL)
-                .setLogger { }
-            return staticAuthorizationClient.addAuthorization(
-                authName = "bearer",
-                authorization = okhttp3.Interceptor { chain ->
-                    val authenticatedRequest = chain.request().newBuilder()
-                        .addHeader("Authorization", "Bearer ${BuildConfig.API_AUTH_TOKEN}")
-                        .build()
-                    chain.proceed(authenticatedRequest)
-                },
-            )
-        }
+        return BankramenRetrofitBuilder.create(
+            interceptors = sessionInterceptors,
+            authenticator = authenticator,
+        ).create(serviceClass)
+    }
 
-        return client
+    private fun sessionInterceptors(
+        context: Context?,
+        includeSessionAuth: Boolean,
+    ): List<Interceptor> {
+        if (!includeSessionAuth || context == null) return emptyList()
+        return listOf(AuthHeaderInterceptor(AuthGraph.sessionStore(context)))
+    }
+
+    private fun sessionAuthenticator(
+        context: Context?,
+        includeSessionAuth: Boolean,
+    ): Authenticator? {
+        if (!includeSessionAuth || context == null) return null
+        return AuthTokenAuthenticator(AuthGraph.sessionManager(context))
     }
 }
