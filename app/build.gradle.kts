@@ -70,7 +70,11 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("boolean", "BYPASS_KAKAO_SERVER_LOGIN", "true")
+        }
         release {
+            buildConfigField("boolean", "BYPASS_KAKAO_SERVER_LOGIN", "false")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

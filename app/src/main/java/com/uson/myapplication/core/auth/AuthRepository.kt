@@ -1,6 +1,7 @@
 package com.uson.myapplication.core.auth
 
 import android.content.Context
+import com.uson.myapplication.BuildConfig
 
 class AuthRepository(
     private val loginGateway: AuthLoginGateway,
@@ -25,6 +26,10 @@ class AuthRepository(
                 redirectUri = result.redirectUri,
                 state = result.state,
             ),
-        )
+        ).recoverCatching {
+            if (!BuildConfig.BYPASS_KAKAO_SERVER_LOGIN) throw it
+
+            TemporaryAuthSessionFactory.create().also(sessionManager::saveSession)
+        }
     }
 }
