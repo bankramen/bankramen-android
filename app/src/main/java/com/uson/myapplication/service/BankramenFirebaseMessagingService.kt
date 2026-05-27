@@ -10,12 +10,24 @@ import com.google.firebase.messaging.RemoteMessage
 import com.uson.myapplication.BankramenApplication.Companion.CHANNEL_ID_PUSH
 import com.uson.myapplication.MainActivity
 import com.uson.myapplication.R
+import com.uson.myapplication.core.auth.DeviceTokenRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class BankramenFirebaseMessagingService : FirebaseMessagingService() {
+    private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val deviceTokenRepository by lazy { DeviceTokenRepository(applicationContext) }
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         Log.d(TAG, "FCM token refreshed: $token")
+        serviceScope.launch {
+            deviceTokenRepository.registerDeviceToken(token)
+                .onFailure { Log.w(TAG, "Failed to register refreshed FCM token", it) }
+        }
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
@@ -57,5 +69,10 @@ class BankramenFirebaseMessagingService : FirebaseMessagingService() {
 
     companion object {
         private const val TAG = "FCM"
+    }
+
+    override fun onDestroy() {
+        serviceScope.cancel()
+        super.onDestroy()
     }
 }

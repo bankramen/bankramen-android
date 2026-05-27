@@ -1,6 +1,7 @@
 package com.uson.myapplication
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -8,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uson.myapplication.core.auth.AuthGraph
 import com.uson.myapplication.core.auth.AuthRepository
+import com.uson.myapplication.core.auth.DeviceTokenRepository
+import com.google.firebase.messaging.FirebaseMessaging
 import com.uson.myapplication.feature.home.HomeScreen
 import com.uson.myapplication.feature.login.LoginRoute
 import com.uson.myapplication.feature.login.PostLoginOnboardingScreen
@@ -24,8 +27,10 @@ data class RootUiState(
 )
 
 class RootViewModel(application: Application) : AndroidViewModel(application) {
-    private val sessionManager = AuthGraph.sessionManager(application.applicationContext)
-    private val authRepository: AuthRepository = AuthGraph.authRepository(application.applicationContext)
+    private val appContext = application.applicationContext
+    private val sessionManager = AuthGraph.sessionManager(appContext)
+    private val authRepository: AuthRepository = AuthGraph.authRepository(appContext)
+    private val deviceTokenRepository = DeviceTokenRepository(appContext)
 
     private val _uiState = MutableStateFlow(RootUiState())
     val uiState: StateFlow<RootUiState> = _uiState.asStateFlow()
@@ -53,6 +58,7 @@ class RootViewModel(application: Application) : AndroidViewModel(application) {
                 showPostLoginOnboarding = session != null,
             )
         }
+        registerCurrentDeviceToken()
     }
 
     fun finishPostLoginOnboarding() {
@@ -66,6 +72,21 @@ class RootViewModel(application: Application) : AndroidViewModel(application) {
             authRepository.logout()
             _uiState.update {
                 RootUiState()
+            }
+        }
+    }
+
+    private fun registerCurrentDeviceToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("DeviceToken", "Failed to fetch current token after login", task.exception)
+                return@addOnCompleteListener
+            }
+
+            val token = task.result.orEmpty()
+            viewModelScope.launch {
+                deviceTokenRepository.registerDeviceToken(token)
+                    .onFailure { Log.w("DeviceToken", "Failed to register device token after login", it) }
             }
         }
     }
