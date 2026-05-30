@@ -1,7 +1,6 @@
 package com.uson.myapplication.core.api
 
 import com.uson.myapplication.BuildConfig
-import com.uson.myapplication.generated.infrastructure.Serializer
 import okhttp3.Authenticator
 import okhttp3.Dns
 import okhttp3.Interceptor
@@ -40,7 +39,7 @@ object BankramenRetrofitBuilder {
             .baseUrl(requireBaseUrl())
             .client(okHttpClient)
             .addConverterFactory(ScalarsConverterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create(Serializer.gsonBuilder.create()))
+            .addConverterFactory(GsonConverterFactory.create(BankramenGson.gsonBuilder.create()))
             .build()
     }
 

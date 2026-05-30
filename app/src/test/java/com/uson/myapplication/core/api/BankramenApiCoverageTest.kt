@@ -10,7 +10,6 @@ import com.uson.myapplication.generated.api.APIApi
 import com.uson.myapplication.generated.api.CategoryApi
 import com.uson.myapplication.generated.api.MonthlyReportApi
 import com.uson.myapplication.generated.api.TransactionApi
-import com.uson.myapplication.generated.infrastructure.Serializer
 import com.uson.myapplication.generated.model.CreateRecurringPaymentRequest
 import com.uson.myapplication.generated.model.CreatePaymentNotificationTransactionRequest
 import com.uson.myapplication.generated.model.CreateTransactionRequest
@@ -193,7 +192,7 @@ class BankramenApiCoverageTest {
             .baseUrl("https://bankramen-api.test/")
             .client(OkHttpClient.Builder().addInterceptor(recorder).build())
             .addConverterFactory(ScalarsConverterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create(Serializer.gsonBuilder.create()))
+            .addConverterFactory(GsonConverterFactory.create(BankramenGson.gsonBuilder.create()))
             .build()
 }
 
@@ -249,22 +248,22 @@ private class RecordingInterceptor : Interceptor {
         "/transactions/expenses" -> """
             {
               "yearMonth":"2026-08",
-              "expenses":[{"title":"스타벅스 강남점","transactionDate":"2026-08-15","transactionTime":{"hour":14,"minute":30,"second":0,"nano":0},"amount":1400,"category":"FOOD","categoryName":"식비"}]
+              "expenses":[{"title":"스타벅스 강남점","transactionDate":"2026-08-15","transactionTime":"14:30:00","amount":1400,"category":"FOOD","categoryName":"식비"}]
             }
         """.trimIndent()
         "/transactions/incomes" -> """
             {
               "yearMonth":"2026-08",
-              "incomes":[{"title":"월급","transactionDate":"2026-08-25","transactionTime":{"hour":9,"minute":0,"second":0,"nano":0},"amount":3000000,"category":"SALARY","categoryName":"급여"}]
+              "incomes":[{"title":"월급","transactionDate":"2026-08-25","transactionTime":"09:00:00","amount":3000000,"category":"SALARY","categoryName":"급여"}]
             }
         """.trimIndent()
         "/transactions/recent" -> """
             {
-              "transactions":[{"transactionId":"550e8400-e29b-41d4-a716-446655440000","title":"스타벅스 강남점","transactionDate":"2026-08-15","transactionTime":{"hour":14,"minute":30,"second":0,"nano":0},"amount":1400,"type":"EXPENSE","category":"FOOD","categoryName":"식비"}]
+              "transactions":[{"transactionId":"550e8400-e29b-41d4-a716-446655440000","title":"스타벅스 강남점","transactionDate":"2026-08-15","transactionTime":"14:30:00","amount":1400,"type":"EXPENSE","category":"FOOD","categoryName":"식비"}]
             }
         """.trimIndent()
         "/transactions/550e8400-e29b-41d4-a716-446655440000/category" -> """
-            {"transactionId":"550e8400-e29b-41d4-a716-446655440000","title":"스타벅스 강남점","transactionDate":"2026-08-15","transactionTime":{"hour":14,"minute":30,"second":0,"nano":0},"amount":1400,"type":"EXPENSE","category":"FOOD","categoryName":"식비"}
+            {"transactionId":"550e8400-e29b-41d4-a716-446655440000","title":"스타벅스 강남점","transactionDate":"2026-08-15","transactionTime":"14:30:00","amount":1400,"type":"EXPENSE","category":"FOOD","categoryName":"식비"}
         """.trimIndent()
         "/transactions",
         "/transactions/payment-notifications",
