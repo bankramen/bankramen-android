@@ -1,0 +1,15 @@
+$ restart app home
+Starting: Intent { cmp=com.uson.myapplication/.MainActivity }
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/32-home-restart-layout.json
+$ tap add entry
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/33-add-entry-before-back-layout.json
+$ press Android BACK while add entry visible
+7:    topResumedActivity=ActivityRecord{44479779 u0 com.google.android.googlequicksearchbox/.InternalGoogleAppActivityEntrypoint t713}
+152:  ResumedActivity: ActivityRecord{44479779 u0 com.google.android.googlequicksearchbox/.InternalGoogleAppActivityEntrypoint t713}
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/34-after-add-entry-back-layout.json
+$ restart app home for card taps
+Starting: Intent { cmp=com.uson.myapplication/.MainActivity }
+$ tap monthly report card
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/35-monthly-card-fresh-layout.json
+$ tap home then recurring card
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/36-recurring-card-fresh-layout.json

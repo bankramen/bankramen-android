@@ -2,6 +2,7 @@ package com.uson.myapplication.feature.login
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.uson.myapplication.core.auth.AuthBootstrapResult
@@ -36,6 +37,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             authRepository.startKakaoLogin(context)
                 .onFailure { throwable ->
+                    Log.e("LoginViewModel", "startKakaoLogin failed", throwable)
                     _uiState.update {
                         it.copy(
                             authStatusLabel = "카카오 로그인 시작 실패",
@@ -69,6 +71,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                             onSuccess()
                         }
                         .onFailure { throwable ->
+                            Log.e("LoginViewModel", "consumePendingKakaoLogin failed", throwable)
                             _uiState.update {
                                 it.copy(
                                     authStatusLabel = "카카오 로그인 실패",

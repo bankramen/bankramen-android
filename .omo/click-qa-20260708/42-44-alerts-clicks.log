@@ -1,0 +1,7 @@
+$ restart app and open Alerts tab
+Starting: Intent { cmp=com.uson.myapplication/.MainActivity }
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/42-alerts-before-buttons-layout.json
+$ tap 모두 읽음 text
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/43-alerts-read-all-tap-layout.json
+$ tap 예 suggestion button
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/44-alerts-yes-tap-layout.json

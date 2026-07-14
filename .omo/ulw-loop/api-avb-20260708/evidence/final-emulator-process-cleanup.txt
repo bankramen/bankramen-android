@@ -1,0 +1,5 @@
+Before xargs cleanup:
+11364 /Users/yuseob/Library/Android/sdk/emulator/crashpad_handler --no-rate-limit --database=/tmp/android-yuseob/emu-crash-36.5.11.db --url=https://clients2.google.com/cr/report --annotation=prod=AndroidEmulator --annotation=ver=36.5.11-15261927 --handshake-fd=4
+11366 /Users/yuseob/Library/Android/sdk/emulator/crashpad_handler --no-rate-limit --database=/tmp/android-yuseob/emu-crash-36.5.11.db --url=https://clients2.google.com/cr/report --annotation=prod=AndroidEmulator --annotation=ver=36.5.11-15261927 --handshake-fd=4
+
+After xargs cleanup:

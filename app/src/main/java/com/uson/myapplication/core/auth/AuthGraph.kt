@@ -10,7 +10,7 @@ object AuthGraph {
 
     fun kakaoLoginLauncher(context: Context): KakaoLoginLauncher = KakaoRestLoginLauncher(
         stateStore = kakaoLoginStateStore(context),
-        apiApi = BankramenApiFactory.createApiApi(includeSessionAuth = false),
+        authApi = BankramenApiFactory.createAuthRawApi(includeSessionAuth = false),
     )
 
     fun kakaoLoginCallbackHandler(context: Context): KakaoLoginCallbackHandler = KakaoLoginCallbackHandler(
@@ -19,12 +19,12 @@ object AuthGraph {
 
     fun sessionManager(context: Context): AuthSessionManager = AuthSessionManager(
         sessionStore = sessionStore(context),
-        reissueGateway = GeneratedAuthGateway(BankramenApiFactory.createApiApi(includeSessionAuth = false)),
-        logoutGateway = GeneratedAuthGateway(BankramenApiFactory.createApiApi(includeSessionAuth = false)),
+        reissueGateway = GeneratedAuthGateway(BankramenApiFactory.createAuthRawApi(includeSessionAuth = false)),
+        logoutGateway = GeneratedAuthGateway(BankramenApiFactory.createAuthRawApi(includeSessionAuth = false)),
     )
 
     fun authRepository(context: Context): AuthRepository = AuthRepository(
-        loginGateway = GeneratedAuthGateway(BankramenApiFactory.createApiApi(includeSessionAuth = false)),
+        loginGateway = GeneratedAuthGateway(BankramenApiFactory.createAuthRawApi(includeSessionAuth = false)),
         sessionManager = sessionManager(context),
         kakaoLoginLauncher = kakaoLoginLauncher(context),
         kakaoLoginStateStore = kakaoLoginStateStore(context),

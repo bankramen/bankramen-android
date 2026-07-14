@@ -1,0 +1,9 @@
+$ hide keyboard with BACK
+$ tap Sign Up after keyboard hidden
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/16-signup-after-hide-layout.json
+$ back to login
+$ tap Find Account after keyboard hidden
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/18-find-after-hide-layout.json
+$ back to login
+$ tap Reset Password after keyboard hidden
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/19-reset-after-hide-layout.json

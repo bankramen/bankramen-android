@@ -1,0 +1,10 @@
+$ adb install
+adb: device 'emulator-5554' not found
+$ adb pm clear
+adb: device 'emulator-5554' not found
+$ adb am start
+adb: device 'emulator-5554' not found
+$ android layout start
+Error: Device with serial or AVD name 'emulator-5554' not found.
+$ screencap start
+error: device 'emulator-5554' not found

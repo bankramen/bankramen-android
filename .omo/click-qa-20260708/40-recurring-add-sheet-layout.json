@@ -1,0 +1,83 @@
+[
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[640,1428]",
+    "key": 3506402
+  },
+  {
+    "text": "정기결제 추가",
+    "center": "[263,1649]",
+    "key": 3506402
+  },
+  {
+    "text": "기준이 될 지출 내역",
+    "center": "[224,2016]",
+    "key": 3506402
+  },
+  {
+    "text": "등록 가능한 지출 내역이 없어요. 직접 입력 모드로 추가할 수 있어요.",
+    "center": "[597,2112]",
+    "key": 3506402
+  },
+  {
+    "text": "매월 결제일",
+    "center": "[162,2244]",
+    "key": 3506402
+  },
+  {
+    "text": "15",
+    "interactions": [
+      "clickable",
+      "focusable",
+      "long-clickable"
+    ],
+    "center": "[640,2394]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable"
+    ],
+    "center": "[640,2667]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[362,1842]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[918,1842]",
+    "key": 3506402
+  },
+  {
+    "text": "추가하기",
+    "center": "[640,2667]",
+    "key": 3506402
+  },
+  {
+    "text": "기존 지출 선택",
+    "center": "[362,1841]",
+    "key": 3506402
+  },
+  {
+    "text": "직접 입력",
+    "center": "[918,1841]",
+    "key": 3506402
+  },
+  {
+    "text": "일",
+    "center": "[1140,2394]",
+    "key": 3506402
+  }
+]

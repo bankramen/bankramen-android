@@ -37,15 +37,11 @@
                     android:pathPrefix="${kakaoRedirectPath}"
                     android:scheme="${kakaoRedirectScheme}" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="kakaob6a16a73eee3bf2c82f62b9039514cfe" />
-            </intent-filter>
         </activity>
+
+        <activity
+            android:name=".core.auth.KakaoWebViewActivity"
+            android:exported="false" />
 
         <service
             android:name=".service.TransactionNotificationService"

@@ -1,0 +1,13 @@
+.omo/ulw-loop/api-avb-20260708/bootstrap-notepad.md
+.omo/ulw-loop/api-avb-20260708/brief.md
+.omo/ulw-loop/api-avb-20260708/evidence/C001-generateBankramenApi.log
+.omo/ulw-loop/api-avb-20260708/evidence/C001-generated-files.txt
+.omo/ulw-loop/api-avb-20260708/evidence/C002-BankramenApiCoverageTest.xml
+.omo/ulw-loop/api-avb-20260708/evidence/C002-api-coverage-test.log
+.omo/ulw-loop/api-avb-20260708/evidence/C003-avd-run.log
+.omo/ulw-loop/api-avb-20260708/evidence/C003-layout.json
+.omo/ulw-loop/api-avb-20260708/evidence/C003-screen.png
+.omo/ulw-loop/api-avb-20260708/evidence/final-git-status.txt
+.omo/ulw-loop/api-avb-20260708/evidence/final-ulw-files.txt
+.omo/ulw-loop/api-avb-20260708/goals.json
+.omo/ulw-loop/api-avb-20260708/ledger.jsonl

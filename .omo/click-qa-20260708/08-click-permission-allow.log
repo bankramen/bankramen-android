@@ -1,0 +1,4 @@
+$ tap Allow notification permission at 640,1590
+$ layout after allow
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/08-after-permission-allow-layout.json
+$ screencap after allow

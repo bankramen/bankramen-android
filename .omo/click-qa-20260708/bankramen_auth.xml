@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <string name="access_token">qa-access-token</string>
+    <string name="refresh_token">qa-refresh-token</string>
+    <long name="access_token_expires_at" value="4102444800000" />
+    <string name="user_id">550e8400-e29b-41d4-a716-446655440000</string>
+</map>

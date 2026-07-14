@@ -1,0 +1,8 @@
+$ tap visible Sign Up at corrected coordinate 105,1550
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/20-signup-corrected-layout.json
+$ back
+$ tap visible Find Account at corrected coordinate 780,1550
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/21-find-corrected-layout.json
+$ back
+$ tap visible Reset Password at corrected coordinate 1100,1550
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/22-reset-corrected-layout.json

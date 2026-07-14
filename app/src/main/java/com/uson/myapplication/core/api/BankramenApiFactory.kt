@@ -1,12 +1,14 @@
 package com.uson.myapplication.core.api
 
 import android.content.Context
+import com.uson.myapplication.core.auth.AuthRawApi
 import com.uson.myapplication.core.auth.AuthGraph
 import com.uson.myapplication.core.auth.AuthHeaderInterceptor
 import com.uson.myapplication.core.auth.AuthTokenAuthenticator
 import com.uson.myapplication.generated.api.APIApi
 import com.uson.myapplication.generated.api.CategoryApi
 import com.uson.myapplication.generated.api.MonthlyReportApi
+import com.uson.myapplication.generated.api.PushNotificationApi
 import com.uson.myapplication.generated.api.TransactionApi
 import okhttp3.Authenticator
 import okhttp3.Interceptor
@@ -24,6 +26,11 @@ object BankramenApiFactory {
         includeSessionAuth = includeSessionAuth,
     )
 
+    fun createAuthRawApi(includeSessionAuth: Boolean = true): AuthRawApi = createService(
+        serviceClass = AuthRawApi::class.java,
+        includeSessionAuth = includeSessionAuth,
+    )
+
     fun createTransactionApi(): TransactionApi = createService(
         serviceClass = TransactionApi::class.java,
         includeSessionAuth = true,
@@ -36,6 +43,11 @@ object BankramenApiFactory {
 
     fun createCategoryApi(): CategoryApi = createService(
         serviceClass = CategoryApi::class.java,
+        includeSessionAuth = true,
+    )
+
+    fun createPushNotificationApi(): PushNotificationApi = createService(
+        serviceClass = PushNotificationApi::class.java,
         includeSessionAuth = true,
     )
 

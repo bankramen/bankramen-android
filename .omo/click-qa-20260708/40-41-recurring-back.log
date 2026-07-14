@@ -1,0 +1,7 @@
+$ go recurring tab
+$ tap 정기결제 추가하기
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/40-recurring-add-sheet-layout.json
+$ press Android BACK while recurring add visible
+7:    topResumedActivity=ActivityRecord{44479779 u0 com.google.android.googlequicksearchbox/.InternalGoogleAppActivityEntrypoint t713}
+152:  ResumedActivity: ActivityRecord{44479779 u0 com.google.android.googlequicksearchbox/.InternalGoogleAppActivityEntrypoint t713}
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/41-after-recurring-add-back-layout.json

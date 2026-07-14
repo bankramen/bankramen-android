@@ -1,0 +1,95 @@
+{
+  "codeReview": {
+    "by": "lazycodex-code-reviewer",
+    "recommendation": "PENDING_REVIEW",
+    "codeQualityStatus": "NO_PRODUCTION_CODE_EDIT_REQUESTED",
+    "evidence": "No source/config files under app/src, openapi, gradle, or root Gradle files are newer than ULW run start; task artifacts are under .omo/ulw-loop/api-avb-20260708/evidence.",
+    "artifactRefs": [
+      ".omo/ulw-loop/api-avb-20260708/evidence/final-source-files-newer-than-run-start.txt",
+      ".omo/ulw-loop/api-avb-20260708/evidence/final-git-status.txt"
+    ],
+    "blockers": []
+  },
+  "manualQa": {
+    "by": "root-orchestrator + lazycodex-qa-executor re-review pending",
+    "status": "passed",
+    "surfaceEvidence": [
+      {
+        "id": "C001",
+        "surface": "Gradle CLI",
+        "invocation": "./gradlew :app:generateBankramenApi",
+        "verdict": "passed",
+        "artifactRefs": [
+          ".omo/ulw-loop/api-avb-20260708/evidence/C001-generateBankramenApi.log",
+          ".omo/ulw-loop/api-avb-20260708/evidence/C001-generated-files.txt"
+        ]
+      },
+      {
+        "id": "C002",
+        "surface": "Gradle/JUnit CLI",
+        "invocation": "./gradlew :app:testDebugUnitTest --tests com.uson.myapplication.core.api.BankramenApiCoverageTest",
+        "verdict": "passed",
+        "artifactRefs": [
+          ".omo/ulw-loop/api-avb-20260708/evidence/C002-api-coverage-test.log",
+          ".omo/ulw-loop/api-avb-20260708/evidence/C002-BankramenApiCoverageTest.xml"
+        ]
+      },
+      {
+        "id": "C003",
+        "surface": "Android AVD",
+        "invocation": "android emulator start Pixel_10_Pro; ./gradlew :app:assembleDebug; android run --apks app/build/outputs/apk/debug/app-debug.apk; android layout -p; android screen capture; android emulator stop Pixel_10_Pro",
+        "verdict": "passed",
+        "artifactRefs": [
+          ".omo/ulw-loop/api-avb-20260708/evidence/C003-avd-run.log",
+          ".omo/ulw-loop/api-avb-20260708/evidence/C003-layout.json",
+          ".omo/ulw-loop/api-avb-20260708/evidence/C003-screen.png"
+        ]
+      }
+    ],
+    "cleanup": {
+      "adb": ".omo/ulw-loop/api-avb-20260708/evidence/final-adb-devices.txt",
+      "emulatorProcesses": ".omo/ulw-loop/api-avb-20260708/evidence/final-android-processes.txt",
+      "emulatorCrashpadCleanup": ".omo/ulw-loop/api-avb-20260708/evidence/final-emulator-process-cleanup.txt"
+    },
+    "adversarialCases": [
+      {
+        "id": "leftover-emulator-state",
+        "criterionRef": "C003",
+        "scenario": "adb devices and exact Android emulator process scan after cleanup",
+        "expectedBehavior": "No attached devices and no matching Android emulator/crashpad processes",
+        "verdict": "passed",
+        "artifactRefs": [
+          ".omo/ulw-loop/api-avb-20260708/evidence/final-adb-devices.txt",
+          ".omo/ulw-loop/api-avb-20260708/evidence/final-android-processes.txt",
+          ".omo/ulw-loop/api-avb-20260708/evidence/final-emulator-process-cleanup.txt"
+        ]
+      }
+    ]
+  },
+  "gateReview": {
+    "by": "lazycodex-gate-reviewer re-review pending",
+    "recommendation": "PENDING_REVIEW",
+    "blockers": []
+  },
+  "iteration": {
+    "fullRerun": false,
+    "status": "passed",
+    "rerunCommands": [
+      "./gradlew :app:generateBankramenApi",
+      "./gradlew :app:testDebugUnitTest --tests com.uson.myapplication.core.api.BankramenApiCoverageTest",
+      "android emulator start Pixel_10_Pro; ./gradlew :app:assembleDebug; android run --apks app/build/outputs/apk/debug/app-debug.apk; android layout -p; android screen capture; android emulator stop Pixel_10_Pro"
+    ],
+    "evidence": "All three criteria passed and artifacts are non-empty."
+  },
+  "criteriaCoverage": {
+    "totalCriteria": 3,
+    "passCount": 3,
+    "originalIntent": "Run/test the API/AVD surface used by this project through omo:ulw-loop.",
+    "desiredOutcome": "Generated API task, API coverage test, and available Android AVD app launch are executed with evidence.",
+    "userOutcomeReview": "Matches the actionable interpretation of api avb: no literal AVB target exists; OpenAPI/API and available AVD were executed.",
+    "adversarialClassesCovered": [
+      "leftover-emulator-state",
+      "dirty-worktree/no-production-edit-check"
+    ]
+  }
+}

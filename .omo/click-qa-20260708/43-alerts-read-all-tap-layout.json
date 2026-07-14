@@ -1,0 +1,140 @@
+[
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[187,2662]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[489,2662]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[791,2662]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[1093,2662]",
+    "key": 3506402
+  },
+  {
+    "text": "⌂",
+    "center": "[187,2629]",
+    "key": 3506402
+  },
+  {
+    "text": "홈",
+    "center": "[187,2709]",
+    "key": 3506402
+  },
+  {
+    "text": "◔",
+    "center": "[489,2629]",
+    "key": 3506402
+  },
+  {
+    "text": "통계",
+    "center": "[489,2709]",
+    "key": 3506402
+  },
+  {
+    "text": "↻",
+    "center": "[791,2629]",
+    "key": 3506402
+  },
+  {
+    "text": "정기결제",
+    "center": "[791,2709]",
+    "key": 3506402
+  },
+  {
+    "text": "◉",
+    "center": "[1093,2629]",
+    "key": 3506402
+  },
+  {
+    "text": "알림",
+    "center": "[1093,2709]",
+    "key": 3506402
+  },
+  {
+    "text": "알림",
+    "center": "[640,366]",
+    "key": 3506402
+  },
+  {
+    "text": "모두 읽음",
+    "center": "[1122,378]",
+    "key": 3506402
+  },
+  {
+    "text": "푸시 알림",
+    "center": "[209,628]",
+    "key": 3506402
+  },
+  {
+    "text": "API request failed: HTTP 401",
+    "center": "[370,735]",
+    "key": 3506402
+  },
+  {
+    "text": "정기결제가 의심돼요!",
+    "center": "[484,879]",
+    "key": 3506402
+  },
+  {
+    "text": "스포티파이 9,900원이 매월 결제되고 있어요.",
+    "center": "[635,964]",
+    "key": 3506402
+  },
+  {
+    "text": "정기결제로 등록하시겠습니까?",
+    "center": "[525,1024]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[724,1132]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[724,1267]",
+    "key": 3506402
+  },
+  {
+    "text": "어제",
+    "center": "[317,1381]",
+    "key": 3506402
+  },
+  {
+    "text": "아니오",
+    "center": "[724,1141]",
+    "key": 3506402
+  },
+  {
+    "text": "예",
+    "center": "[724,1267]",
+    "key": 3506402
+  }
+]

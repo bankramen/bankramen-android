@@ -1,0 +1,1 @@
+Implement and verify Bankramen Android UX priorities 1-3: (1) user-guided NotificationListenerService activation and recoverable permission state, (2) visible automatic-recording status plus sync-failure feedback, (3) target-specific transaction deletion and mutation failure feedback. Preserve unrelated dirty work.

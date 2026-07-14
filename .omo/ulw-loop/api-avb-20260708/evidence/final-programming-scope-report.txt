@@ -1,0 +1,6 @@
+Programming/slop scope receipt
+- User requested execution/testing, not code changes.
+- No apply_patch or production source edit was performed during this ULW run.
+- Source/config mtime check after ULW run start is captured in final-source-files-newer-than-run-start.txt and has 0 entries.
+- Existing dirty worktree was observed before this run and was not reverted or modified for this task.
+- Therefore code slop/programming review is not applicable beyond no-production-edit verification.

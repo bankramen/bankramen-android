@@ -1,0 +1,10 @@
+$ adb install
+Performing Streamed Install
+Success
+$ adb pm clear
+Success
+$ adb am start
+Starting: Intent { cmp=com.uson.myapplication/.MainActivity }
+$ android layout start
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/07-start-layout.json
+$ screencap start

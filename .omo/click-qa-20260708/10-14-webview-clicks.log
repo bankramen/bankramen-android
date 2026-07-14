@@ -1,0 +1,13 @@
+$ tap Log In with empty fields
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/10-empty-login-layout.json
+$ tap Save Login Information checkbox
+$ tap Sign Up
+7:    topResumedActivity=ActivityRecord{42627949 u0 com.uson.myapplication/.core.auth.KakaoWebViewActivity t711}
+201:  ResumedActivity: ActivityRecord{42627949 u0 com.uson.myapplication/.core.auth.KakaoWebViewActivity t711}
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/12-signup-layout.json
+$ back to login
+$ tap Find Account
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/13-find-account-layout.json
+$ back to login
+$ tap Reset Password
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/14-reset-password-layout.json

@@ -1,0 +1,20 @@
+$ clear app data
+Success
+$ stop emulator
+OK: killing emulator, bye bye
+OK
+$ adb devices after cleanup
+List of devices attached
+emulator-5554          device product:sdk_gphone16k_arm64 model:sdk_gphone16k_arm64 device:emu64a16k transport_id:6
+
+$ emulator processes after cleanup
+3072 /Users/yuseob/Library/Android/sdk/emulator/emulator -kill 94459 -sleep 20
+3075 /Users/yuseob/Library/Android/sdk/emulator/crashpad_handler --no-rate-limit --database=/tmp/android-yuseob/emu-crash-36.5.11.db --url=https://clients2.google.com/cr/report --annotation=prod=AndroidEmulator --annotation=ver=36.5.11-15261927 --handshake-fd=4
+94459 /Users/yuseob/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64-headless @Pixel_10_Pro -no-window -no-audio -gpu swiftshader_indirect -no-snapshot-load -no-boot-anim -memory 1536
+94461 /Users/yuseob/Library/Android/sdk/emulator/crashpad_handler --no-rate-limit --database=/tmp/android-yuseob/emu-crash-36.5.11.db --url=https://clients2.google.com/cr/report --annotation=prod=AndroidEmulator --annotation=ver=36.5.11-15261927 --handshake-fd=4
+94463 /Users/yuseob/Library/Android/sdk/emulator/crashpad_handler --no-rate-limit --database=/tmp/android-yuseob/emu-crash-36.5.11.db --url=https://clients2.google.com/cr/report --annotation=prod=AndroidEmulator --annotation=ver=36.5.11-15261927 --handshake-fd=4
+94483 /Users/yuseob/Library/Android/sdk/emulator/netsimd --host-dns=168.126.63.1,168.126.63.2
+$ adb devices after wait
+List of devices attached
+
+$ emulator processes after wait

@@ -7,6 +7,11 @@ sealed interface KakaoLoginResult {
         val state: String,
     ) : KakaoLoginResult
 
+    data class DirectToken(
+        val accessToken: String,
+        val refreshToken: String?,
+    ) : KakaoLoginResult
+
     data class Failure(
         val message: String,
     ) : KakaoLoginResult

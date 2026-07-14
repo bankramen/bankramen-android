@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "createdAt": "2026-07-07T23:36:58.476Z",
+  "updatedAt": "2026-07-07T23:43:21.374Z",
+  "briefPath": ".omo/ulw-loop/api-avb-20260708/brief.md",
+  "goalsPath": ".omo/ulw-loop/api-avb-20260708/goals.json",
+  "ledgerPath": ".omo/ulw-loop/api-avb-20260708/ledger.jsonl",
+  "codexGoalMode": "aggregate",
+  "goals": [
+    {
+      "id": "G001-api-avb-android-bankramen-android",
+      "title": "이 프로젝트에서 사용하는 api avb 실행해서 테스트해보기. 로컬 Android 프로젝트 bankramen-android에...",
+      "objective": "이 프로젝트에서 사용하는 api avb 실행해서 테스트해보기. 로컬 Android 프로젝트 bankramen-android에서 실제로 존재하는 API/OpenAPI/AVD 관련 실행 표면을 확인하고, 실행 가능한 가장 좁은 검증 명령을 돌려 결과를 증거로 남긴다. 코드 변경은 하지 않는다.",
+      "status": "in_progress",
+      "successCriteria": [
+        {
+          "id": "C001",
+          "scenario": "CLI auxiliary surface: run ./gradlew :app:generateBankramenApi | tee .omo/ulw-loop/api-avb-20260708/evidence/C001-generateBankramenApi.log; PASS if command exits 0, log contains BUILD SUCCESSFUL, and app/build/generated/openapi/src/main/kotlin/com/uson/myapplication/generated/api contains generated API files.",
+          "userModel": "happy",
+          "expectedEvidence": ".omo/ulw-loop/api-avb-20260708/evidence/C001-generateBankramenApi.log plus generated file listing .omo/ulw-loop/api-avb-20260708/evidence/C001-generated-files.txt",
+          "essential": true,
+          "capturedEvidence": "CLI stdout: .omo/ulw-loop/api-avb-20260708/evidence/C001-generateBankramenApi.log contains BUILD SUCCESSFUL; generated files: .omo/ulw-loop/api-avb-20260708/evidence/C001-generated-files.txt lists APIApi.kt, CategoryApi.kt, MonthlyReportApi.kt, PushNotificationApi.kt, TransactionApi.kt | cleanup: no persistent process spawned; build output only under Gradle build directory",
+          "status": "pass",
+          "capturedAt": "2026-07-07T23:40:56.199Z"
+        },
+        {
+          "id": "C002",
+          "scenario": "CLI auxiliary surface: run ./gradlew :app:testDebugUnitTest --tests com.uson.myapplication.core.api.BankramenApiCoverageTest | tee .omo/ulw-loop/api-avb-20260708/evidence/C002-api-coverage-test.log; PASS if command exits 0 and executes BankramenApiCoverageTest successfully.",
+          "userModel": "edge",
+          "expectedEvidence": ".omo/ulw-loop/api-avb-20260708/evidence/C002-api-coverage-test.log and JUnit XML under app/build/test-results/testDebugUnitTest/TEST-com.uson.myapplication.core.api.BankramenApiCoverageTest.xml",
+          "essential": true,
+          "capturedEvidence": "CLI stdout: .omo/ulw-loop/api-avb-20260708/evidence/C002-api-coverage-test.log contains BUILD SUCCESSFUL; copied JUnit XML .omo/ulw-loop/api-avb-20260708/evidence/C002-BankramenApiCoverageTest.xml reports tests=4 skipped=0 failures=0 errors=0 | cleanup: no persistent process spawned; Gradle daemon left as standard project build service",
+          "status": "pass",
+          "capturedAt": "2026-07-07T23:43:21.374Z"
+        },
+        {
+          "id": "C003",
+          "scenario": "Android AVD surface: run android emulator list, android emulator start Pixel_10_Pro, ./gradlew :app:assembleDebug, android run --apks app/build/outputs/apk/debug/app-debug.apk, then android layout -p. PASS if the emulator boots, the APK launches, and the layout dump/screenshot is captured; BLOCKED if emulator tooling cannot start a device in this environment.",
+          "userModel": "regression",
+          "expectedEvidence": ".omo/ulw-loop/api-avb-20260708/evidence/C003-avd-run.log, C003-layout.json, and optional C003-screen.png with cleanup receipt stopping emulator if started.",
+          "essential": false,
+          "capturedEvidence": "Android AVD surface: .omo/ulw-loop/api-avb-20260708/evidence/C003-avd-run.log shows Pixel_10_Pro booted as emulator-5554, :app:assembleDebug BUILD SUCCESSFUL, app loaded com.uson.myapplication, install completed, activation completed; layout .omo/ulw-loop/api-avb-20260708/evidence/C003-layout.json contains login screen text; screenshot .omo/ulw-loop/api-avb-20260708/evidence/C003-screen.png inspected | cleanup: android emulator stop Pixel_10_Pro attempted and adb devices after cleanup shows no attached devices",
+          "status": "pass",
+          "capturedAt": "2026-07-07T23:41:14.177Z"
+        }
+      ],
+      "attempt": 1,
+      "createdAt": "2026-07-07T23:36:58.476Z",
+      "updatedAt": "2026-07-07T23:43:21.374Z",
+      "startedAt": "2026-07-07T23:37:18.766Z"
+    }
+  ],
+  "codexObjective": "Complete the durable ulw-loop plan in .omo/ulw-loop/api-avb-20260708/goals.json, including later accepted/appended stories, under the original brief constraints; use .omo/ulw-loop/api-avb-20260708/ledger.jsonl as the audit trail.",
+  "activeGoalId": "G001-api-avb-android-bankramen-android"
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.uson.myapplication.core.api.BankramenApiCoverageTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-07-07T23:39:03.796Z" hostname="YuSeoBui-MacBookPro.local" time="0.177">
+  <properties/>
+  <testcase name="authGatewayCallsCallbackReissueAndLogoutApis" classname="com.uson.myapplication.core.api.BankramenApiCoverageTest" time="0.146"/>
+  <testcase name="authParsersHandlePrimitiveResponses" classname="com.uson.myapplication.core.api.BankramenApiCoverageTest" time="0.0"/>
+  <testcase name="generatedSwaggerEndpointsCreateExpectedHttpRequests" classname="com.uson.myapplication.core.api.BankramenApiCoverageTest" time="0.023"/>
+  <testcase name="homeRepositoryCallsDataApisAfterLoginFlowCanEnterHome" classname="com.uson.myapplication.core.api.BankramenApiCoverageTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

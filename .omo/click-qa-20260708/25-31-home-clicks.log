@@ -1,0 +1,16 @@
+$ tap top bell icon
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/25-top-bell-tap-layout.json
+$ tap bottom Alerts tab
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/26-alerts-tab-layout.json
+$ tap Stats tab
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/27-stats-tab-layout.json
+$ tap Recurring tab
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/28-recurring-tab-layout.json
+$ tap Home tab
+$ tap 내역 추가
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/29-add-entry-layout.json
+$ dismiss add entry
+$ tap monthly report card
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/30-monthly-card-layout.json
+$ tap home then recurring card
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/31-recurring-card-layout.json

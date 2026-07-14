@@ -1,0 +1,209 @@
+[
+  {
+    "interactions": [
+      "focusable"
+    ],
+    "state": [
+      "selected"
+    ],
+    "center": "[160,2712]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[480,2712]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[800,2712]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[1120,2712]",
+    "key": 3506402
+  },
+  {
+    "text": "Home",
+    "center": "[160,2760]",
+    "key": 3506402
+  },
+  {
+    "text": "Search",
+    "center": "[480,2760]",
+    "key": 3506402
+  },
+  {
+    "text": "Notifications",
+    "center": "[799,2760]",
+    "key": 3506402
+  },
+  {
+    "text": "Activity",
+    "center": "[1120,2760]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[335,906]",
+    "resource-id": "googleapp_sbn_aim_chip",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[783,906]",
+    "resource-id": "googleapp_sbn_live_chip",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[1088,906]",
+    "resource-id": "googleapp_sbn_lens_image_generation_chip",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[640,660]",
+    "resource-id": "googleapp_facade_search_box",
+    "key": 3506402
+  },
+  {
+    "content-desc": "Google",
+    "center": "[640,261]",
+    "key": 3506402
+  },
+  {
+    "text": "AI Mode",
+    "center": "[386,906]",
+    "key": 3506402
+  },
+  {
+    "content-desc": "Search Live",
+    "center": "[783,906]",
+    "key": 3506402
+  },
+  {
+    "content-desc": "Search Live",
+    "center": "[784,906]",
+    "key": 3506402
+  },
+  {
+    "content-desc": "Generate Image",
+    "center": "[1088,906]",
+    "key": 3506402
+  },
+  {
+    "text": "🍌",
+    "content-desc": "Generate Image",
+    "center": "[1088,906]",
+    "key": 3506402
+  },
+  {
+    "text": "Search",
+    "center": "[243,660]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[968,660]",
+    "resource-id": "googleapp_searchbox_mic",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[1112,660]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "focusable"
+    ],
+    "center": "[640,1308]",
+    "resource-id": "googleapp_discover_recycler_view",
+    "key": 3506402
+  },
+  {
+    "content-desc": "Voice search",
+    "center": "[968,660]",
+    "key": 3506402
+  },
+  {
+    "content-desc": "Camera search",
+    "center": "[1112,660]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[96,240]",
+    "resource-id": "aimThreadsIconButton",
+    "key": 3506402
+  },
+  {
+    "content-desc": "AI mode history",
+    "center": "[96,240]",
+    "key": 3506402
+  },
+  {
+    "text": "Something went wrong",
+    "center": "[439,1173]",
+    "resource-id": "googleapp_discover_title",
+    "key": 3506402
+  },
+  {
+    "text": "Couldn\u0027t connect to Discover",
+    "center": "[439,1296]",
+    "resource-id": "googleapp_discover_message",
+    "key": 3506402
+  },
+  {
+    "text": "Try again",
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[987,1527]",
+    "resource-id": "googleapp_discover_primary_button",
+    "key": 3506402
+  },
+  {
+    "content-desc": "Sign in",
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[1172,240]",
+    "resource-id": "googleapp_selected_account_disc",
+    "key": 3506402
+  }
+]

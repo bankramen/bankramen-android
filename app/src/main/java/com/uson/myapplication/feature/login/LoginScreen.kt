@@ -30,6 +30,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -48,6 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.uson.myapplication.R
+import com.uson.myapplication.core.notification.openNotificationListenerSettings
 import com.uson.myapplication.ui.theme.BrandBlue
 import com.uson.myapplication.ui.theme.KakaoYellow
 import com.uson.myapplication.ui.theme.MyApplicationTheme
@@ -200,7 +202,9 @@ fun PostLoginOnboardingScreen(
     modifier: Modifier = Modifier,
 ) {
     var pageIndex by rememberSaveable { mutableIntStateOf(0) }
+    var settingsLaunchFailed by rememberSaveable { mutableStateOf(false) }
     val page = postLoginOnboardingPages[pageIndex]
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -262,11 +266,24 @@ fun PostLoginOnboardingScreen(
                     fontWeight = FontWeight.Normal,
                 ),
             )
+            if (settingsLaunchFailed) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "설정을 열 수 없어요. 홈에서 다시 시도할 수 있어요.",
+                    color = Color(0xFFD92D20),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
             Spacer(modifier = Modifier.weight(1.55f))
             Button(
                 onClick = {
                     if (pageIndex == postLoginOnboardingPages.lastIndex) {
-                        onFinished()
+                        if (settingsLaunchFailed || openNotificationListenerSettings(context)) {
+                            onFinished()
+                        } else {
+                            settingsLaunchFailed = true
+                        }
                     } else {
                         pageIndex += 1
                     }
@@ -282,7 +299,11 @@ fun PostLoginOnboardingScreen(
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
             ) {
                 Text(
-                    text = if (pageIndex == postLoginOnboardingPages.lastIndex) "시작하기" else "다음",
+                    text = when {
+                        pageIndex != postLoginOnboardingPages.lastIndex -> "다음"
+                        settingsLaunchFailed -> "홈으로 가기"
+                        else -> "자동 기록 켜기"
+                    },
                     style = MaterialTheme.typography.labelLarge.copy(
                         fontSize = 15.sp,
                         lineHeight = 24.sp,

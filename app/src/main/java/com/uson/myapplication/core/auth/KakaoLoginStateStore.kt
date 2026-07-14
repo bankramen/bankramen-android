@@ -38,6 +38,19 @@ class KakaoLoginStateStore private constructor(
             .apply()
     }
 
+    fun completeTokenSuccess(accessToken: String, refreshToken: String?) {
+        preferences.edit()
+            .putString(KeyResultType, ResultTypeDirectToken)
+            .putString(KeyAccessToken, accessToken)
+            .apply { refreshToken?.let { putString(KeyRefreshToken, it) } ?: remove(KeyRefreshToken) }
+            .remove(KeyAuthorizationCode)
+            .remove(KeyResultState)
+            .remove(KeyRedirectUri)
+            .remove(KeyErrorMessage)
+            .remove(KeyPendingState)
+            .apply()
+    }
+
     fun completeFailure(message: String) {
         preferences.edit()
             .putString(KeyResultType, ResultTypeFailure)
@@ -51,6 +64,18 @@ class KakaoLoginStateStore private constructor(
     fun consumeResult(): KakaoLoginResult? {
         val resultType = preferences.getString(KeyResultType, null) ?: return null
         val result = when (resultType) {
+            ResultTypeDirectToken -> {
+                val accessToken = preferences.getString(KeyAccessToken, null)
+                if (accessToken.isNullOrBlank()) {
+                    KakaoLoginResult.Failure(message = "accessToken이 없어요")
+                } else {
+                    KakaoLoginResult.DirectToken(
+                        accessToken = accessToken,
+                        refreshToken = preferences.getString(KeyRefreshToken, null),
+                    )
+                }
+            }
+
             ResultTypeSuccess -> {
                 val authorizationCode = preferences.getString(KeyAuthorizationCode, null)
                 val redirectUri = preferences.getString(KeyRedirectUri, null)
@@ -96,7 +121,10 @@ class KakaoLoginStateStore private constructor(
         private const val KeyErrorMessage = "error_message"
 
         private const val ResultTypeSuccess = "success"
+        private const val ResultTypeDirectToken = "direct_token"
         private const val ResultTypeFailure = "failure"
+        private const val KeyAccessToken = "access_token"
+        private const val KeyRefreshToken = "refresh_token"
 
         @Volatile
         private var instance: KakaoLoginStateStore? = null

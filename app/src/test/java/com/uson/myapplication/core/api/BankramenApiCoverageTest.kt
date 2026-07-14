@@ -14,7 +14,6 @@ import com.uson.myapplication.generated.model.CreateRecurringPaymentRequest
 import com.uson.myapplication.generated.model.CreatePaymentNotificationTransactionRequest
 import com.uson.myapplication.generated.model.CreateTransactionRequest
 import com.uson.myapplication.generated.model.DeviceTokenRequest
-import com.uson.myapplication.generated.model.KakaoLoginRequest
 import com.uson.myapplication.generated.model.TokenRequest
 import com.uson.myapplication.generated.model.UpdateTransactionCategoryRequest
 import java.time.LocalDate
@@ -43,7 +42,7 @@ class BankramenApiCoverageTest {
         val monthlyReportApi = retrofit.create(MonthlyReportApi::class.java)
         val transactionApi = retrofit.create(TransactionApi::class.java)
 
-        apiApi.login(KakaoLoginRequest(kakaoAccessToken = "kakao-access-token"))
+        apiApi.login()
         apiApi.reissue(TokenRequest(refreshToken = "refresh-token"))
         apiApi.logout(TokenRequest(refreshToken = "refresh-token"))
         apiApi.saveDeviceToken(
@@ -58,7 +57,10 @@ class BankramenApiCoverageTest {
                 nextBillingDate = LocalDate.of(2026, 9, 15),
             ),
         )
-        apiApi.confirm(recurringPaymentId = UUID.fromString("550e8400-e29b-41d4-a716-446655440003"))
+        apiApi.confirm(
+            userId = UUID.fromString("550e8400-e29b-41d4-a716-446655440001"),
+            recurringPaymentId = UUID.fromString("550e8400-e29b-41d4-a716-446655440003"),
+        )
         categoryApi.getCategories()
         monthlyReportApi.getMonthlyAmountSummary(year = 2026, month = 8)
         monthlyReportApi.getMonthlyCategoryExpenses(year = 2026, month = 8)
@@ -87,10 +89,10 @@ class BankramenApiCoverageTest {
 
         assertEquals(
             setOf(
-                "POST /auth/kakao/login",
+                "GET /auth/kakao/login",
                 "POST /auth/kakao/reissue",
                 "POST /auth/kakao/logout",
-                "POST /push/token",
+                "POST /auth/kakao/token",
                 "POST /recurring-payments",
                 "PATCH /recurring-payments/550e8400-e29b-41d4-a716-446655440003/confirm",
                 "GET /categories",
@@ -108,7 +110,7 @@ class BankramenApiCoverageTest {
         )
         assertTrue(recorder.calls.any { it.path == "/reports/monthly/summary" && it.query == "year=2026&month=8" })
         assertTrue(recorder.calls.any { it.path == "/transactions/incomes" && it.query == "year=2026&month=8" })
-        assertTrue(recorder.calls.any { it.path == "/push/token" })
+        assertTrue(recorder.calls.any { it.path == "/auth/kakao/token" })
     }
 
     @Test
@@ -227,7 +229,7 @@ private class RecordingInterceptor : Interceptor {
         "/auth/kakao/callback",
         "/auth/kakao/reissue" -> """{"accessToken":"access-token","refreshToken":"refresh-token","expiresIn":3600,"userId":"user-1"}"""
         "/auth/kakao/logout" -> "{}"
-        "/push/token" -> "{}"
+        "/auth/kakao/token" -> "{}"
         "/recurring-payments" -> "{}"
         "/recurring-payments/550e8400-e29b-41d4-a716-446655440003/confirm" -> "{}"
         "/categories" -> """{"categories":[{"code":"FOOD","displayName":"식비"},{"code":"SALARY","displayName":"급여"}]}"""

@@ -1,0 +1,209 @@
+[
+  {
+    "text": "Kakao Account",
+    "interactions": [
+      "focusable"
+    ],
+    "center": "[640,1428]",
+    "key": 3506402
+  },
+  {
+    "text": "Kakao",
+    "center": "[640,190]",
+    "key": 3506402
+  },
+  {
+    "text": "Service Usage Information",
+    "center": "[186,2562]",
+    "key": 3506402
+  },
+  {
+    "content-desc": "Terms of Service",
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[430,2587]",
+    "key": 3506402
+  },
+  {
+    "content-desc": "Privacy Policy",
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[744,2587]",
+    "key": 3506402
+  },
+  {
+    "content-desc": "Customer Service",
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[1063,2587]",
+    "key": 3506402
+  },
+  {
+    "text": "©",
+    "center": "[529,2691]",
+    "key": 3506402
+  },
+  {
+    "content-desc": "Kakao Corp.",
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[655,2692]",
+    "key": 3506402
+  },
+  {
+    "content-desc": "Sign Up",
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "state": [
+      "focused"
+    ],
+    "center": "[109,1431]",
+    "key": 3506402
+  },
+  {
+    "text": "Language Selection Box",
+    "center": "[280,2544]",
+    "resource-id": "selectLang",
+    "key": 3506402
+  },
+  {
+    "text": "English",
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[153,2587]",
+    "key": 3506402
+  },
+  {
+    "text": "Terms of Service",
+    "center": "[430,2586]",
+    "key": 3506402
+  },
+  {
+    "text": "Privacy Policy",
+    "center": "[744,2586]",
+    "key": 3506402
+  },
+  {
+    "text": "Customer Service",
+    "center": "[1063,2586]",
+    "key": 3506402
+  },
+  {
+    "text": "Kakao Corp.",
+    "center": "[661,2691]",
+    "key": 3506402
+  },
+  {
+    "text": "Log In",
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[640,1257]",
+    "key": 3506402
+  },
+  {
+    "text": "Sign Up",
+    "center": "[109,1431]",
+    "key": 3506402
+  },
+  {
+    "text": "View help",
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[610,828]",
+    "key": 3506402
+  },
+  {
+    "text": "Please enter your Kakao Account.\n",
+    "center": "[640,1008]",
+    "key": 3506402
+  },
+  {
+    "content-desc": "Find Account",
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[805,1431]",
+    "key": 3506402
+  },
+  {
+    "content-desc": "Reset Password",
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[1102,1431]",
+    "key": 3506402
+  },
+  {
+    "text": "Enter Account Information",
+    "center": "[60,435]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[640,499]",
+    "resource-id": "loginId--1",
+    "key": 3506402
+  },
+  {
+    "text": "Enter Password",
+    "center": "[58,582]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable",
+      "password"
+    ],
+    "center": "[640,646]",
+    "resource-id": "password--2",
+    "key": 3506402
+  },
+  {
+    "text": "Save Login Information",
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[307,828]",
+    "resource-id": "saveSignedIn--4",
+    "key": 3506402
+  },
+  {
+    "text": "Save Login Information",
+    "center": "[307,828]",
+    "resource-id": "label-saveSignedIn",
+    "key": 3506402
+  },
+  {
+    "text": "Find Account",
+    "center": "[805,1431]",
+    "key": 3506402
+  },
+  {
+    "text": "Reset Password",
+    "center": "[1102,1431]",
+    "key": 3506402
+  }
+]

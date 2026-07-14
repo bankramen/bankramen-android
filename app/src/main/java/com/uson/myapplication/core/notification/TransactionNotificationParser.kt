@@ -4,10 +4,9 @@ import android.app.Notification
 import android.service.notification.StatusBarNotification
 
 object TransactionNotificationParser {
-    private val supportedPackagePrefixes = listOf(
-        "com.kakaopay",
-        "viva.republica",
-        "com.naver",
+    private val supportedPackages = mapOf(
+        "com.kakaopay.app" to "KAKAO_PAY",
+        "com.kbankwith.smartbank" to "K_BANK",
     )
 
     private val amountRegex = Regex("([0-9][0-9,]*)원")
@@ -68,8 +67,7 @@ object TransactionNotificationParser {
         )
     }
 
-    private fun isSupportedPackage(packageName: String): Boolean =
-        supportedPackagePrefixes.any(packageName::startsWith)
+    private fun isSupportedPackage(packageName: String): Boolean = packageName in supportedPackages
 
     private fun extractAmount(rawText: String): Long? =
         amountRegex.find(rawText)
@@ -96,12 +94,8 @@ object TransactionNotificationParser {
         return title.ifBlank { null }
     }
 
-    private fun resolvePaymentMethod(packageName: String): String = when {
-        packageName.startsWith("com.kakaopay") -> "KAKAO_PAY"
-        packageName.startsWith("viva.republica") -> "TOSS"
-        packageName.startsWith("com.naver") -> "NAVER_PAY"
-        else -> "UNKNOWN"
-    }
+    private fun resolvePaymentMethod(packageName: String): String =
+        supportedPackages[packageName] ?: "UNKNOWN"
 
     private fun resolveTransactionType(
         title: String,

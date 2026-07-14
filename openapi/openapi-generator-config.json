@@ -4,5 +4,8 @@
   "useCoroutines": true,
   "enumPropertyNaming": "UPPERCASE",
   "sourceFolder": "src/main/kotlin",
-  "packageName": "com.uson.myapplication.generated"
+  "packageName": "com.uson.myapplication.generated",
+  "modelNameMappings": {
+    "LocalTime": "BankramenLocalTime"
+  }
 }

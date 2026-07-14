@@ -1,0 +1,81 @@
+$ android emulator list
+Pixel_10_Pro
+$ android emulator start Pixel_10_Pro
+Emulator process 53474 started, log file location: '/Users/yuseob/.android/Pixel_10_Pro/emulator.log'
+Waiting for virtual device 'Pixel_10_Pro' to fully start (299 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (299 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (298 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (297 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (296 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (295 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (294 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (293 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (292 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (291 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (290 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (289 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (289 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (288 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (287 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (286 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (285 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (284 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (283 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (282 seconds left)Waiting for virtual device 'Pixel_10_Pro' to fully start (281 seconds left)
+Virtual device successfully started as 'emulator-5554'
+$ adb devices -l
+List of devices attached
+emulator-5554          device product:sdk_gphone16k_arm64 model:sdk_gphone16k_arm64 device:emu64a16k transport_id:2
+
+$ ./gradlew :app:assembleDebug
+> Task :app:generateBankramenApi UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:generateDebugBuildConfig UP-TO-DATE
+> Task :app:checkDebugAarMetadata UP-TO-DATE
+> Task :app:processDebugNavigationResources UP-TO-DATE
+> Task :app:compileDebugNavigationResources UP-TO-DATE
+> Task :app:generateDebugResValues UP-TO-DATE
+> Task :app:processDebugGoogleServices UP-TO-DATE
+> Task :app:mapDebugSourceSetPaths UP-TO-DATE
+> Task :app:generateDebugResources UP-TO-DATE
+> Task :app:mergeDebugResources UP-TO-DATE
+> Task :app:packageDebugResources UP-TO-DATE
+> Task :app:parseDebugLocalResources UP-TO-DATE
+> Task :app:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :app:extractDeepLinksDebug UP-TO-DATE
+> Task :app:processDebugMainManifest UP-TO-DATE
+> Task :app:processDebugManifest UP-TO-DATE
+> Task :app:processDebugManifestForPackage UP-TO-DATE
+> Task :app:processDebugResources UP-TO-DATE
+> Task :app:kspDebugKotlin UP-TO-DATE
+> Task :app:compileDebugKotlin UP-TO-DATE
+> Task :app:javaPreCompileDebug UP-TO-DATE
+> Task :app:compileDebugJavaWithJavac UP-TO-DATE
+> Task :app:mergeDebugShaders UP-TO-DATE
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets UP-TO-DATE
+> Task :app:compressDebugAssets UP-TO-DATE
+> Task :app:processDebugJavaRes UP-TO-DATE
+> Task :app:mergeDebugJavaResource UP-TO-DATE
+> Task :app:checkDebugDuplicateClasses UP-TO-DATE
+> Task :app:desugarDebugFileDependencies UP-TO-DATE
+> Task :app:mergeExtDexDebug UP-TO-DATE
+> Task :app:mergeLibDexDebug UP-TO-DATE
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugJniLibFolders UP-TO-DATE
+> Task :app:mergeDebugNativeLibs UP-TO-DATE
+> Task :app:stripDebugDebugSymbols UP-TO-DATE
+> Task :app:validateSigningDebug UP-TO-DATE
+> Task :app:writeDebugAppMetadata UP-TO-DATE
+> Task :app:writeDebugSigningConfigVersions UP-TO-DATE
+> Task :app:mergeProjectDexDebug
+> Task :app:packageDebug
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:assembleDebug
+
+BUILD SUCCESSFUL in 16s
+41 actionable tasks: 4 executed, 37 up-to-date
+$ android run --apks app/build/outputs/apk/debug/app-debug.apk
+App loaded: com.uson.myapplication
+Debuggable: true
+Multiple candidates found, picking the only launcher activity: com.uson.myapplication.MainActivity
+Selected component: com.uson.myapplication.MainActivity
+Installing APKs: app/build/outputs/apk/debug/app-debug.apk
+Installation completed successfully
+Executing: Launching Activity for com.uson.myapplication
+Activation completed successfully
+$ android layout -p -o .omo/ulw-loop/api-avb-20260708/evidence/C003-layout.json
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/ulw-loop/api-avb-20260708/evidence/C003-layout.json
+$ android screen capture -o .omo/ulw-loop/api-avb-20260708/evidence/C003-screen.png
+Screenshot written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/ulw-loop/api-avb-20260708/evidence/C003-screen.png
+$ android emulator stop Pixel_10_Pro
+Waiting for virtual device 'emulator-5554' to fully terminate (59 seconds left)Waiting for virtual device 'emulator-5554' to fully terminate (59 seconds left)Waiting for virtual device 'emulator-5554' to fully terminate (58 seconds left)Waiting for virtual device 'emulator-5554' to fully terminate (57 seconds left)Waiting for virtual device 'emulator-5554' to fully terminate (56 seconds left)
+$ adb devices -l after cleanup
+List of devices attached
+
+cleanup: android emulator stop Pixel_10_Pro attempted; adb devices captured after cleanup

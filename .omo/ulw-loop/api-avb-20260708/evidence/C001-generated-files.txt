@@ -1,0 +1,5 @@
+app/build/generated/openapi/src/main/kotlin/com/uson/myapplication/generated/api/APIApi.kt
+app/build/generated/openapi/src/main/kotlin/com/uson/myapplication/generated/api/CategoryApi.kt
+app/build/generated/openapi/src/main/kotlin/com/uson/myapplication/generated/api/MonthlyReportApi.kt
+app/build/generated/openapi/src/main/kotlin/com/uson/myapplication/generated/api/PushNotificationApi.kt
+app/build/generated/openapi/src/main/kotlin/com/uson/myapplication/generated/api/TransactionApi.kt

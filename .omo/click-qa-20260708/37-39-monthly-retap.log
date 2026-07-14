@@ -1,0 +1,6 @@
+$ return home
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/37-home-before-monthly-retap-layout.json
+$ tap monthly report card exact center 335,1690
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/38-monthly-retap-layout.json
+$ tap monthly report card label 215,1735 if still home
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/39-monthly-label-retap-layout.json

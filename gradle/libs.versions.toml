@@ -21,6 +21,7 @@ room = "2.7.2"
 kakaoSdk = "2.23.2"
 firebaseBom = "33.15.0"
 googleServices = "4.4.2"
+composePlaceholder = "1.0.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,6 +55,7 @@ kakao-user = { group = "com.kakao.sdk", name = "v2-user", version.ref = "kakaoSd
 kakao-auth = { group = "com.kakao.sdk", name = "v2-auth", version.ref = "kakaoSdk" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging-ktx" }
+compose-placeholder-material3 = { group = "com.eygraber", name = "compose-placeholder-material3", version.ref = "composePlaceholder" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

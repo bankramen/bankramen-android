@@ -1,0 +1,17 @@
+$ tap Sign Up at y=1425
+$ current url-ish dumpsys/log
+2:  ACTIVITY com.google.android.apps.nexuslauncher/.NexusLauncherActivity e8eb727 pid=1045 userId=0 uid=10192 displayId=0(type=INTERNAL)
+103:                                  androidx.constraintlayout.widget.ConstraintLayout{500fd8e V.E...... ........ 29,125-1171,188 #7f0a0408 app:id/text_group}
+105:                                    com.google.android.systemui.smartspace.DoubleShadowTextView{88169af GFED..... ......ID 0,0-0,0 #7f0a042a app:id/title_text}
+108:                                      com.google.android.systemui.smartspace.DoubleShadowTextView{e93649a G.ED..... ......I. 0,0-0,0 #7f0a03b6 app:id/subtitle_text}
+111:                                      com.google.android.systemui.smartspace.DoubleShadowTextView{648fda8 G.ED..... ......I. 0,0-0,0 #7f0a03ba app:id/supplemental_line_text}
+123:                        android.widget.FrameLayout{692d9c6 VFE...C.. ........ 144,0-800,168 #7f0b2274 app:id/googleapp_search_widget_ghost_text_search}
+152:                  com.android.launcher3.DeleteDropTarget{aab4076 V.ED..... ......ID 226,0-578,168 #7f0a014a app:id/delete_target_text}
+153:                  com.android.launcher3.SecondaryDropTarget{9d29677 V.ED..... ......ID 662,0-1030,168 #7f0a044c app:id/uninstall_target_text}
+212:          context: com.google.android.apps.nexuslauncher.NexusLauncherActivity@d93ceb8
+343:    	getHotseatLayoutPadding(context).top: 0.0px (0.0dp)
+344:    	getHotseatLayoutPadding(context).bottom: 344.0px (114.666664dp)
+345:    	getHotseatLayoutPadding(context).left: 88.0px (29.333334dp)
+346:    	getHotseatLayoutPadding(context).right: 88.0px (29.333334dp)
+binary file matches (found "\0" byte around offset 46834)
+Layout tree written to /Users/yuseob/Documents/android-project/bankramen-android/.omo/click-qa-20260708/23-signup-y1425-layout.json

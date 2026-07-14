@@ -1,0 +1,263 @@
+[
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[640,1428]",
+    "key": 3506402
+  },
+  {
+    "text": "내역 추가",
+    "center": "[202,358]",
+    "key": 3506402
+  },
+  {
+    "text": "금액",
+    "center": "[106,725]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable",
+      "long-clickable"
+    ],
+    "center": "[640,893]",
+    "key": 3506402
+  },
+  {
+    "text": "내역명",
+    "center": "[123,1133]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable",
+      "long-clickable"
+    ],
+    "center": "[640,1286]",
+    "key": 3506402
+  },
+  {
+    "text": "카테고리",
+    "center": "[140,1512]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[249,1716]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[639,1716]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[1030,1716]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[249,2028]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[639,2028]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[1030,2028]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[249,2340]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[639,2340]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[1030,2346]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable"
+    ],
+    "center": "[640,2667]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[362,551]",
+    "key": 3506402
+  },
+  {
+    "interactions": [
+      "clickable",
+      "focusable"
+    ],
+    "center": "[918,551]",
+    "key": 3506402
+  },
+  {
+    "text": "🍔",
+    "center": "[249,1671]",
+    "key": 3506402
+  },
+  {
+    "text": "식비",
+    "center": "[249,1773]",
+    "key": 3506402
+  },
+  {
+    "text": "🍹",
+    "center": "[639,1671]",
+    "key": 3506402
+  },
+  {
+    "text": "카페/간식",
+    "center": "[639,1773]",
+    "key": 3506402
+  },
+  {
+    "text": "🏪",
+    "center": "[1030,1671]",
+    "key": 3506402
+  },
+  {
+    "text": "편의점/마트/잡화",
+    "center": "[1030,1773]",
+    "key": 3506402
+  },
+  {
+    "text": "🛍",
+    "center": "[249,1983]",
+    "key": 3506402
+  },
+  {
+    "text": "쇼핑",
+    "center": "[249,2085]",
+    "key": 3506402
+  },
+  {
+    "text": "🎮",
+    "center": "[639,1983]",
+    "key": 3506402
+  },
+  {
+    "text": "취미/여가",
+    "center": "[639,2085]",
+    "key": 3506402
+  },
+  {
+    "text": "🏥",
+    "center": "[1030,1983]",
+    "key": 3506402
+  },
+  {
+    "text": "의료/건강/피트니스",
+    "center": "[1031,2085]",
+    "key": 3506402
+  },
+  {
+    "text": "🔎",
+    "center": "[249,2295]",
+    "key": 3506402
+  },
+  {
+    "text": "미용",
+    "center": "[249,2397]",
+    "key": 3506402
+  },
+  {
+    "text": "🚌",
+    "center": "[639,2295]",
+    "key": 3506402
+  },
+  {
+    "text": "교통/자동차",
+    "center": "[640,2397]",
+    "key": 3506402
+  },
+  {
+    "text": "✈",
+    "center": "[1030,2301]",
+    "key": 3506402
+  },
+  {
+    "text": "여행/숙박",
+    "center": "[1030,2409]",
+    "key": 3506402
+  },
+  {
+    "text": "추가하기",
+    "center": "[640,2667]",
+    "key": 3506402
+  },
+  {
+    "text": "지출",
+    "center": "[362,550]",
+    "key": 3506402
+  },
+  {
+    "text": "수입",
+    "center": "[918,550]",
+    "key": 3506402
+  },
+  {
+    "text": "0",
+    "center": "[146,893]",
+    "key": 3506402
+  },
+  {
+    "text": "원",
+    "center": "[1129,893]",
+    "key": 3506402
+  },
+  {
+    "text": "어디서 쓰셨나요?",
+    "center": "[321,1286]",
+    "key": 3506402
+  }
+]

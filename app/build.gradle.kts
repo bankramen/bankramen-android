@@ -70,11 +70,7 @@ android {
     }
 
     buildTypes {
-        debug {
-            buildConfigField("boolean", "BYPASS_KAKAO_SERVER_LOGIN", "true")
-        }
         release {
-            buildConfigField("boolean", "BYPASS_KAKAO_SERVER_LOGIN", "false")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -121,6 +117,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.compose.placeholder.material3)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.squareup.retrofit)
     implementation(libs.squareup.retrofit.converter.gson)

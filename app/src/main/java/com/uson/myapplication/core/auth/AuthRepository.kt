@@ -1,7 +1,6 @@
 package com.uson.myapplication.core.auth
 
 import android.content.Context
-import com.uson.myapplication.BuildConfig
 
 class AuthRepository(
     private val loginGateway: AuthLoginGateway,
@@ -20,16 +19,22 @@ class AuthRepository(
     suspend fun completePendingKakaoLogin(): Result<AuthSession>? = when (val result = kakaoLoginStateStore.consumeResult()) {
         null -> null
         is KakaoLoginResult.Failure -> Result.failure(IllegalStateException(result.message))
+        is KakaoLoginResult.DirectToken -> {
+            val session = AuthSession(
+                accessToken = result.accessToken,
+                refreshToken = result.refreshToken ?: "",
+                accessTokenExpiresAtMillis = System.currentTimeMillis() + 3_600_000L,
+                userId = null,
+            )
+            sessionManager.saveSession(session)
+            Result.success(session)
+        }
         is KakaoLoginResult.Success -> loginWithKakao(
             KakaoAuthorizationCodeRequest(
                 authorizationCode = result.authorizationCode,
                 redirectUri = result.redirectUri,
                 state = result.state,
             ),
-        ).recoverCatching {
-            if (!BuildConfig.BYPASS_KAKAO_SERVER_LOGIN) throw it
-
-            TemporaryAuthSessionFactory.create().also(sessionManager::saveSession)
-        }
+        )
     }
 }

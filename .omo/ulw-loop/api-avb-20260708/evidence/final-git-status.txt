@@ -1,0 +1,58 @@
+ M .idea/appInsightsSettings.xml
+ M .idea/deploymentTargetSelector.xml
+ M app/build.gradle.kts
+ M app/src/main/AndroidManifest.xml
+ M app/src/main/java/com/uson/myapplication/core/api/BankramenApiFactory.kt
+ M app/src/main/java/com/uson/myapplication/core/api/BankramenGson.kt
+ M app/src/main/java/com/uson/myapplication/core/auth/AuthGraph.kt
+ M app/src/main/java/com/uson/myapplication/core/auth/AuthRepository.kt
+ M app/src/main/java/com/uson/myapplication/core/auth/AuthSessionStore.kt
+ M app/src/main/java/com/uson/myapplication/core/auth/GeneratedAuthGateway.kt
+ M app/src/main/java/com/uson/myapplication/core/auth/KakaoLoginCallbackHandler.kt
+ M app/src/main/java/com/uson/myapplication/core/auth/KakaoLoginResult.kt
+ M app/src/main/java/com/uson/myapplication/core/auth/KakaoLoginStateStore.kt
+ M app/src/main/java/com/uson/myapplication/core/auth/KakaoRestLoginLauncher.kt
+ D app/src/main/java/com/uson/myapplication/core/auth/TemporaryAuthSessionFactory.kt
+ M app/src/main/java/com/uson/myapplication/core/notification/NotificationDebugRepository.kt
+ M app/src/main/java/com/uson/myapplication/core/notification/TransactionNotificationParser.kt
+ M app/src/main/java/com/uson/myapplication/core/recurring/RecurringPaymentRepository.kt
+ M app/src/main/java/com/uson/myapplication/feature/home/HomeApiRepository.kt
+ M app/src/main/java/com/uson/myapplication/feature/home/HomeScreen.kt
+ M app/src/main/java/com/uson/myapplication/feature/home/HomeViewModel.kt
+ M app/src/main/java/com/uson/myapplication/feature/login/LoginViewModel.kt
+ M app/src/main/java/com/uson/myapplication/service/TransactionNotificationService.kt
+ M app/src/main/res/drawable/ic_launcher_background.xml
+ M app/src/main/res/drawable/ic_launcher_foreground.xml
+ M app/src/main/res/mipmap-hdpi/ic_launcher.webp
+ M app/src/main/res/mipmap-hdpi/ic_launcher_round.webp
+ M app/src/main/res/mipmap-mdpi/ic_launcher.webp
+ M app/src/main/res/mipmap-mdpi/ic_launcher_round.webp
+ M app/src/main/res/mipmap-xhdpi/ic_launcher.webp
+ M app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp
+ M app/src/main/res/mipmap-xxhdpi/ic_launcher.webp
+ M app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp
+ M app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp
+ M app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp
+ M app/src/test/java/com/uson/myapplication/core/api/BankramenApiCoverageTest.kt
+ D app/src/test/java/com/uson/myapplication/core/auth/TemporaryAuthSessionFactoryTest.kt
+ M app/src/test/java/com/uson/myapplication/core/notification/TransactionNotificationParserTest.kt
+ M firebase-debug.log
+ M gradle/libs.versions.toml
+ M openapi/bankramen-api.json
+ M openapi/openapi-generator-config.json
+?? .kotlin/
+?? .omo/
+?? app/src/androidTest/java/com/uson/myapplication/feature/
+?? app/src/main/java/com/uson/myapplication/core/auth/AuthLogger.kt
+?? app/src/main/java/com/uson/myapplication/core/auth/AuthRawApi.kt
+?? app/src/main/java/com/uson/myapplication/core/auth/AuthResponseParser.kt
+?? app/src/main/java/com/uson/myapplication/core/auth/AuthUserIdResolver.kt
+?? app/src/main/java/com/uson/myapplication/core/auth/KakaoWebViewActivity.kt
+?? app/src/main/java/com/uson/myapplication/core/transaction/
+?? app/src/main/res/drawable-nodpi/
+?? app/src/test/java/com/uson/myapplication/core/auth/AuthUserIdResolverTest.kt
+?? app/src/test/java/com/uson/myapplication/core/transaction/
+?? app/src/test/java/com/uson/myapplication/feature/
+?? "\354\234\244\354\234\240\354\204\255 - 3\354\260\250 \355\224\204\353\241\234\354\240\235\355\212\270 \354\244\221\352\260\204\353\263\264\352\263\240\354\204\234(3308_\354\234\244\354\234\240\354\204\255).docx"
+?? "\354\234\244\354\234\240\354\204\255 - 3\354\260\250 \355\224\204\353\241\234\354\240\235\355\212\270 \354\244\221\352\260\204\353\263\264\352\263\240\354\204\234(3308_\354\234\244\354\234\240\354\204\255)_\354\265\234\354\242\205.docx"
+?? "\354\234\244\354\234\240\354\204\255 - 4\354\260\250 \355\224\204\353\241\234\354\240\235\355\212\270 \354\244\221\352\260\204\353\263\264\352\263\240\354\204\234(3308_\354\234\244\354\234\240\354\204\255).md"

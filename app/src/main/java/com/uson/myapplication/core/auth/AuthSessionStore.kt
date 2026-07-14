@@ -15,25 +15,43 @@ class AuthSessionStore private constructor(
         val accessToken = preferences.getString(KeyAccessToken, null) ?: return null
         val refreshToken = preferences.getString(KeyRefreshToken, null) ?: return null
         val expiresAt = preferences.getLong(KeyAccessTokenExpiresAt, 0L)
+        val storedUserId = preferences.getString(KeyUserId, null)
+        val resolvedUserId = resolveAuthenticatedUserId(
+            explicitUserId = storedUserId,
+            accessToken = accessToken,
+        )
+
+        if (storedUserId.isNullOrBlank() && !resolvedUserId.isNullOrBlank()) {
+            preferences.edit().putString(KeyUserId, resolvedUserId).apply()
+            authLogDebug("backfilled userId from access token userId=$resolvedUserId")
+        }
 
         return AuthSession(
             accessToken = accessToken,
             refreshToken = refreshToken,
             accessTokenExpiresAtMillis = expiresAt,
-            userId = preferences.getString(KeyUserId, null),
+            userId = resolvedUserId,
         )
     }
 
     fun saveSession(session: AuthSession) {
+        val resolvedUserId = resolveAuthenticatedUserId(
+            explicitUserId = session.userId,
+            accessToken = session.accessToken,
+        )
+        authLogDebug(
+            "saveSession accessTokenPresent=${session.accessToken.isNotBlank()} refreshTokenPresent=${session.refreshToken.isNotBlank()} userId=$resolvedUserId",
+        )
         preferences.edit()
             .putString(KeyAccessToken, session.accessToken)
             .putString(KeyRefreshToken, session.refreshToken)
             .putLong(KeyAccessTokenExpiresAt, session.accessTokenExpiresAtMillis)
-            .putString(KeyUserId, session.userId)
+            .putString(KeyUserId, resolvedUserId)
             .apply()
     }
 
     fun clearSession() {
+        authLogDebug("clearSession")
         preferences.edit()
             .remove(KeyAccessToken)
             .remove(KeyRefreshToken)
