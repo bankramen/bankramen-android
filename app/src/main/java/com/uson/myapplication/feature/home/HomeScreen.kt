@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -138,6 +139,7 @@ internal data class EditableRecurringPayment(
 fun HomeScreen(
     userId: String?,
     onLogoutClick: () -> Unit,
+    allowMockData: Boolean = false,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(),
 ) {
@@ -229,8 +231,9 @@ fun HomeScreen(
         Box(modifier = Modifier.fillMaxSize()) {
             Scaffold(
                 containerColor = BackgroundGray,
+                contentWindowInsets = WindowInsets(0, 0, 0, 0),
                 bottomBar = {
-                    MainBottomBar(
+                    if (currentTab != MainTab.Home) MainBottomBar(
                         selectedTab = currentTab,
                         onTabSelected = {
                             currentTab = it
@@ -249,6 +252,7 @@ fun HomeScreen(
                         MainTab.Home -> HomeDashboardPage(
                             state = state,
                             transactions = editableTransactions,
+                            allowMockData = allowMockData,
                             automaticRecordingEnabled = automaticRecordingEnabled,
                             onOpenAutomaticRecordingSettings = {
                                 openNotificationListenerSettings(context)
@@ -268,6 +272,7 @@ fun HomeScreen(
                                 statsMode = 0
                             },
                             onOpenRecurring = { currentTab = MainTab.Recurring },
+                            onOpenNotifications = { currentTab = MainTab.Alerts },
                         )
 
                         MainTab.Stats -> {
@@ -493,6 +498,7 @@ fun HomeScreen(
 private fun HomeDashboardPage(
     state: HomeUiState,
     transactions: List<EditableTransaction>,
+    allowMockData: Boolean,
     automaticRecordingEnabled: Boolean,
     onOpenAutomaticRecordingSettings: () -> Unit,
     onAddEntry: () -> Unit,
@@ -500,52 +506,21 @@ private fun HomeDashboardPage(
     onEditTransactionCategory: (EditableTransaction) -> Unit,
     onOpenMonthlyReport: () -> Unit,
     onOpenRecurring: () -> Unit,
+    onOpenNotifications: () -> Unit,
 ) {
-    ScreenColumn {
-        HomeTopBar()
-        HomeSummaryCard(
-            title = "이번 달 지출",
-            amount = state.expenseLabel,
-            isLoading = state.shouldShowSkeleton,
-            buttonLabel = "내역 추가",
-            onClick = onAddEntry,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        AutomaticRecordingCard(
-            enabled = automaticRecordingEnabled,
-            notificationCount = state.notificationSummary.count,
-            latestMerchant = state.notificationSummary.latestMerchant,
-            latestAmount = state.notificationSummary.latestAmount,
-            uploadFailed = state.notificationUploadFailed,
-            onOpenSettings = onOpenAutomaticRecordingSettings,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        HomeRecentCard(
-            transactions = transactions,
-            isLoading = state.shouldShowSkeleton,
-            errorMessage = state.errorMessage,
-            onDeleteTransaction = onDeleteTransaction,
-            onEditTransactionCategory = onEditTransactionCategory,
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            HomeActionCard(
-                modifier = Modifier.weight(1f),
-                icon = "📊",
-                title = "월별 리포트",
-                subtitle = state.expenseComparisonLabel,
-                isLoading = state.shouldShowSkeleton,
-                onClick = onOpenMonthlyReport,
-            )
-            HomeActionCard(
-                modifier = Modifier.weight(1f),
-                icon = "🔄",
-                title = "정기결제",
-                subtitle = "예정 결제를 관리해요",
-                onClick = onOpenRecurring,
-            )
-        }
-    }
+    BalogHomeDashboard(
+        state = state,
+        transactions = transactions,
+        allowMockData = allowMockData,
+        automaticRecordingEnabled = automaticRecordingEnabled,
+        onOpenRecordingSettings = onOpenAutomaticRecordingSettings,
+        onAddEntry = onAddEntry,
+        onOpenTransaction = onEditTransactionCategory,
+        onDeleteTransaction = onDeleteTransaction,
+        onOpenReport = onOpenMonthlyReport,
+        onOpenRecurring = onOpenRecurring,
+        onOpenNotifications = onOpenNotifications,
+    )
 }
 
 @Composable
@@ -2510,6 +2485,7 @@ private fun HomeScreenPreview() {
         HomeScreen(
             userId = "demo_user",
             onLogoutClick = {},
+            allowMockData = true,
         )
     }
 }
