@@ -32,8 +32,7 @@ class AlertsScreenshotTest {
             MyApplicationTheme(darkTheme = false, dynamicColor = false) {
                 androidx.compose.foundation.layout.Box(modifier = androidx.compose.ui.Modifier.width(320.dp)) {
                     AlertsPage(
-                        notificationDebugEvents = emptyList(),
-                        parsedNotifications = emptyList(),
+                        state = HomeUiState(pushNotificationsLoading = false),
                         onAcceptSuggestion = { acceptClicks += 1 },
                         suggestionAccepted = false,
                         onDismissSuggestion = { dismissClicks += 1 },
@@ -43,7 +42,7 @@ class AlertsScreenshotTest {
             }
         }
 
-        composeRule.onNodeWithText("알림 API").assertIsDisplayed()
+        composeRule.onNodeWithText("푸시 알림").assertIsDisplayed()
         composeRule.onNodeWithText("정기결제가 의심돼요!").assertIsDisplayed()
         composeRule.onNodeWithText("아니오").assertIsDisplayed()
         composeRule.onNodeWithText("예").assertIsDisplayed()
