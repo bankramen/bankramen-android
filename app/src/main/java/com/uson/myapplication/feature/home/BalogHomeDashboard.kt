@@ -89,6 +89,7 @@ internal fun BalogHomeDashboard(
     onOpenReport: () -> Unit,
     onOpenRecurring: () -> Unit,
     onOpenNotifications: () -> Unit,
+    onOpenTransactions: () -> Unit,
 ) {
     val showSample = allowMockData && state.expense == 0L && state.recentTransactions.isEmpty()
     val expense = if (showSample) 1_160_200L else state.expense
@@ -125,7 +126,7 @@ internal fun BalogHomeDashboard(
                 onClick = onOpenRecordingSettings,
             )
             Spacer(Modifier.height(20.dp))
-            RecentPaymentsCard(entries, onOpenTransaction, onDeleteTransaction, onOpenReport)
+            RecentPaymentsCard(entries, onOpenTransaction, onDeleteTransaction, onOpenTransactions)
             Spacer(Modifier.height(20.dp))
             RecurringCards(recurring, onOpenRecurring)
             Spacer(Modifier.height(20.dp))
@@ -141,7 +142,7 @@ internal fun BalogHomeDashboard(
                 }
             }
         }
-        HomeBottomBar(onOpenReport, onOpenNotifications)
+        HomeBottomBar(onOpenTransactions, onOpenReport, onOpenNotifications)
     }
     }
 }
@@ -293,12 +294,13 @@ private fun InvestmentCard(showSample: Boolean, onOpen: () -> Unit) {
 }
 
 @Composable
-private fun HomeBottomBar(onReport: () -> Unit, onNotifications: () -> Unit) {
+private fun HomeBottomBar(onTransactions: () -> Unit, onReport: () -> Unit, onNotifications: () -> Unit) {
     Column(Modifier.fillMaxWidth().height(83.dp).background(BalogHomeCard)) {
         HorizontalDivider(color = BalogHomeBorder, thickness = 1.dp)
         Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 6.dp)) {
             listOf("홈" to 0xEE1F, "거래" to 0xECAD, "자산" to 0xEFF6, "리포트" to 0xECCB, "알림" to 0xEF94).forEach { (label, icon) ->
                 val itemModifier = when (label) {
+                    "거래" -> Modifier.weight(1f).clickable(onClick = onTransactions)
                     "리포트" -> Modifier.weight(1f).clickable(onClick = onReport)
                     "알림" -> Modifier.weight(1f).clickable(onClick = onNotifications)
                     else -> Modifier.weight(1f)
