@@ -220,6 +220,7 @@ private fun TransactionHistoryResponse.toUiModel(
     category = categoryName ?: categoryNames[category?.value].orEmpty().ifBlank { category?.value.orEmpty() },
     amount = amount ?: 0L,
     positive = positive || type == TransactionHistoryResponse.Type.INCOME,
+    date = transactionDate,
 )
 
 internal fun PushNotificationResponse.toUiModel(): PushNotificationItem = PushNotificationItem(

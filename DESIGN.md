@@ -138,3 +138,11 @@ The current delivery targets only `/home`. These values were read from the rende
 - Recent card: 350 × 378px, ivory with 1px border and 8px radius. Header is 44px high; each transaction is about 65px high with a 36px tinted icon well, 13.5px merchant/amount, and 11px metadata.
 - Fixed add button occupies y=693–761 with 20px side inset; button itself is 350 × 48px, CTA blue and 8px radius. Five-item nav occupies y=761–844 with ivory background, 1px top border, 21px icons, and 10.5px labels.
 - Repeat the same 8px radius and quiet 1px outline for lower content cards. Preserve the real HomeViewModel data path. Readdy sample values are visible only when `allowMockData` is explicitly enabled for a preview; production defaults to live or empty data.
+
+## 11. Transactions List Screen Fidelity Contract
+
+- Scope: this phase implements only the monthly transaction list. Existing add and category-edit sheets remain the actions for the list CTA and rows.
+- Architecture: `TransactionsViewModel` owns month selection, expense/income tabs, and API loading. It reuses `HomeApiRepository`; sample transactions are enabled only by the explicit preview flag.
+- List header: title at x=20/y=53, 20px bold; month selector centered at y≈103; summary uses the shared ivory card, 8px radius, and quiet outline.
+- List controls: expense/income control is a 33px pill with a 4px inset. Date headers use 11.5px semibold text; transaction rows remain 65px tall with the same 36px icon wells used on Home.
+- Bottom navigation retains the 83px Home geometry. Home, Transactions, Reports, and Alerts are connected in this phase; Assets becomes active when its screen is implemented next.

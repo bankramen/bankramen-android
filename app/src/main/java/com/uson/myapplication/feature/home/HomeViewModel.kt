@@ -109,6 +109,8 @@ data class TransactionItem(
     val category: String,
     val amount: Long,
     val positive: Boolean = false,
+    val date: LocalDate? = null,
+    val manual: Boolean = false,
 ) {
     val amountLabel: String
         get() = if (positive) amount.formatSignedWon() else "-${amount.formatWon()}"

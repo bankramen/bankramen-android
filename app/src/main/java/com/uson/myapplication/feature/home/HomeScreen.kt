@@ -62,6 +62,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.uson.myapplication.core.notification.isNotificationListenerAccessGranted
 import com.uson.myapplication.core.notification.openNotificationListenerSettings
+import com.uson.myapplication.feature.transactions.TransactionsScreen
 import com.uson.myapplication.ui.theme.BackgroundGray
 import com.uson.myapplication.ui.theme.BrandBlue
 import com.uson.myapplication.ui.theme.MyApplicationTheme
@@ -69,6 +70,7 @@ import com.uson.myapplication.ui.theme.SecondaryText
 
 private enum class MainTab(val label: String, val icon: String) {
     Home("홈", "⌂"),
+    Transactions("거래", "⇄"),
     Stats("통계", "◔"),
     Recurring("정기결제", "↻"),
     Alerts("알림", "◉"),
@@ -233,7 +235,7 @@ fun HomeScreen(
                 containerColor = BackgroundGray,
                 contentWindowInsets = WindowInsets(0, 0, 0, 0),
                 bottomBar = {
-                    if (currentTab != MainTab.Home) MainBottomBar(
+                    if (currentTab != MainTab.Home && currentTab != MainTab.Transactions) MainBottomBar(
                         selectedTab = currentTab,
                         onTabSelected = {
                             currentTab = it
@@ -273,6 +275,33 @@ fun HomeScreen(
                             },
                             onOpenRecurring = { currentTab = MainTab.Recurring },
                             onOpenNotifications = { currentTab = MainTab.Alerts },
+                            onOpenTransactions = {
+                                currentTab = MainTab.Transactions
+                            },
+                        )
+
+                        MainTab.Transactions -> TransactionsScreen(
+                            allowMockData = allowMockData,
+                            onTransaction = { item ->
+                                selectedTransaction = EditableTransaction(
+                                    id = item.id,
+                                    title = item.merchant,
+                                    time = item.time,
+                                    categoryCode = item.categoryCode,
+                                    category = item.category,
+                                    amountLabel = item.amountLabel,
+                                    positive = item.positive,
+                                    icon = item.icon,
+                                )
+                                selectedCategory = item.categoryCode.ifBlank { categoryCodeFor(item.category) }
+                                overlaySheet = OverlaySheet.EditCategory
+                            },
+                            onAdd = { overlaySheet = OverlaySheet.AddEntry },
+                            onHome = {
+                                currentTab = MainTab.Home
+                            },
+                            onReports = { currentTab = MainTab.Stats },
+                            onAlerts = { currentTab = MainTab.Alerts },
                         )
 
                         MainTab.Stats -> {
@@ -507,6 +536,7 @@ private fun HomeDashboardPage(
     onOpenMonthlyReport: () -> Unit,
     onOpenRecurring: () -> Unit,
     onOpenNotifications: () -> Unit,
+    onOpenTransactions: () -> Unit,
 ) {
     BalogHomeDashboard(
         state = state,
@@ -520,6 +550,7 @@ private fun HomeDashboardPage(
         onOpenReport = onOpenMonthlyReport,
         onOpenRecurring = onOpenRecurring,
         onOpenNotifications = onOpenNotifications,
+        onOpenTransactions = onOpenTransactions,
     )
 }
 
