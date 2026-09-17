@@ -129,7 +129,7 @@ internal fun BalogHomeDashboard(
             Spacer(Modifier.height(20.dp))
             RecurringCards(recurring, onOpenRecurring)
             Spacer(Modifier.height(20.dp))
-            if (showSample) InvestmentCard(onOpenReport)
+            InvestmentCard(showSample, onOpenReport)
             Text("수집된 거래는 자동으로 분류되고, 애매한 항목은 ‘분류 중’으로 표시돼요", modifier = Modifier.padding(bottom = 24.dp), fontSize = 11.sp, color = BalogHomeMuted)
         }
         Box(Modifier.fillMaxWidth().height(68.dp).padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 12.dp)) {
@@ -272,18 +272,22 @@ private fun RecurringCards(entries: List<RecurringPreview>, onAll: () -> Unit) {
 }
 
 @Composable
-private fun InvestmentCard(onOpen: () -> Unit) {
+private fun InvestmentCard(showSample: Boolean, onOpen: () -> Unit) {
     Surface(color = BalogHomeCard, border = BorderStroke(1.dp, BalogHomeBorder), shape = cardShape) {
         Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 14.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("투자 자산", fontFamily = plex, fontWeight = FontWeight.SemiBold, fontSize = 13.5.sp, color = BalogHomeInk)
-                Text("자세히 ›", modifier = Modifier.clickable(onClick = onOpen), fontFamily = plex, fontSize = 11.sp, color = Color(0xFF183C71))
+                if (showSample) Text("자세히 ›", modifier = Modifier.clickable(onClick = onOpen), fontFamily = plex, fontSize = 11.sp, color = Color(0xFF183C71))
             }
             Spacer(Modifier.height(8.dp))
-            Text("총 평가금액", fontSize = 11.sp, color = BalogHomeMuted)
-            Text("48,265,000원", fontFamily = plex, fontWeight = FontWeight.Bold, fontSize = 24.sp, color = BalogHomeInk)
-            Text("오늘 상승 +412,000원 (+0.86%)", fontFamily = plex, fontSize = 11.sp, color = BalogHomeGreen)
-            Text("오늘 09:42 기준 · 증권 · 은행계좌 통합", fontSize = 10.5.sp, color = BalogHomeMuted)
+            if (showSample) {
+                Text("총 평가금액", fontSize = 11.sp, color = BalogHomeMuted)
+                Text("48,265,000원", fontFamily = plex, fontWeight = FontWeight.Bold, fontSize = 24.sp, color = BalogHomeInk)
+                Text("오늘 상승 +412,000원 (+0.86%)", fontFamily = plex, fontSize = 11.sp, color = BalogHomeGreen)
+                Text("오늘 09:42 기준 · 증권 · 은행계좌 통합", fontSize = 10.5.sp, color = BalogHomeMuted)
+            } else {
+                Text("등록된 자산 정보가 없어요", fontSize = 12.sp, color = BalogHomeMuted)
+            }
         }
     }
 }
